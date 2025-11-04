@@ -1,1 +1,7 @@
 project_id = "dwzlkroznjljmqaxcqmv"
+
+[functions.debate-ai]
+verify_jwt = false
+
+[functions.text-to-speech]
+verify_jwt = false
