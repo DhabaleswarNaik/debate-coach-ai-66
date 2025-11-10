@@ -15,7 +15,7 @@ interface VoiceDebateProps {
 }
 
 // You need to create an agent in ElevenLabs dashboard and get the agent ID
-const ELEVENLABS_AGENT_ID = "YOUR_AGENT_ID"; // Replace with your actual agent ID
+const ELEVENLABS_AGENT_ID = "agent_4501k9q5jxvtf5fr6dct0se3zad6";
 
 export const VoiceDebate = ({ config, onEnd }: VoiceDebateProps) => {
   const [timeLog, setTimeLog] = useState({
