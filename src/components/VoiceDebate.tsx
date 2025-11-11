@@ -72,6 +72,29 @@ export const VoiceDebate = ({ config, onEnd }: VoiceDebateProps) => {
   const handleEndConversation = async () => {
     try {
       await conversation.endSession();
+      
+      // Save debate to database
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { error } = await supabase.from("debates").insert({
+          user_id: user.id,
+          topic: config.topic,
+          difficulty: config.difficulty,
+          side: config.side,
+          allocated_time: config.allocatedTime,
+          transcript: null,
+          scores: null,
+        });
+
+        if (error) {
+          console.error("Error saving debate:", error);
+          toast.error("Debate saved locally but couldn't sync to your history");
+        } else {
+          toast.success("Debate saved to your history");
+        }
+      }
+      
       onEnd();
     } catch (error) {
       console.error("Error ending conversation:", error);

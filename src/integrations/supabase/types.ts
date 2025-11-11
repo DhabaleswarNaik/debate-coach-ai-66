@@ -14,7 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      debates: {
+        Row: {
+          allocated_time: number
+          created_at: string
+          difficulty: string
+          id: string
+          scores: Json | null
+          side: string
+          topic: string
+          transcript: Json | null
+          user_id: string
+        }
+        Insert: {
+          allocated_time: number
+          created_at?: string
+          difficulty: string
+          id?: string
+          scores?: Json | null
+          side: string
+          topic: string
+          transcript?: Json | null
+          user_id: string
+        }
+        Update: {
+          allocated_time?: number
+          created_at?: string
+          difficulty?: string
+          id?: string
+          scores?: Json | null
+          side?: string
+          topic?: string
+          transcript?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "debates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
