@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { DebateSetup, DebateConfig } from "@/components/DebateSetup";
 import { VoiceDebate } from "@/components/VoiceDebate";
 import { DebateFeedback } from "@/components/DebateFeedback";
@@ -12,35 +12,34 @@ type DebateState = "setup" | "active" | "feedback";
 const Index = () => {
   const [state, setState] = useState<DebateState>("setup");
   const [config, setConfig] = useState<DebateConfig | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for existing session
+    // Check authentication status
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      if (!session) {
+      if (session) {
+        setUser(session.user);
+      } else {
         navigate("/auth");
       }
+      setLoading(false);
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      if (!session) {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setUser(session.user);
+      } else {
         navigate("/auth");
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
 
   const handleStart = (debateConfig: DebateConfig) => {
     setConfig(debateConfig);
@@ -56,28 +55,28 @@ const Index = () => {
     setState("setup");
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <p>Loading...</p>
       </div>
     );
   }
 
-  if (!session) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <div className="absolute top-4 right-4">
-        <Button onClick={handleLogout} variant="outline">
+        <Button variant="outline" onClick={handleLogout}>
           Logout
         </Button>
       </div>
-      
       {state === "setup" && <DebateSetup onStart={handleStart} />}
-      {state === "active" && config && <VoiceDebate config={config} onEnd={handleEnd} />}
+      {state === "active" && config && <VoiceDebate config={config} onEnd={handleEnd} userId={user?.id} />}
       {state === "feedback" && config && (
         <DebateFeedback 
           config={config}

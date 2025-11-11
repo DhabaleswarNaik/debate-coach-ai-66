@@ -12,12 +12,13 @@ import { supabase } from "@/integrations/supabase/client";
 interface VoiceDebateProps {
   config: DebateConfig;
   onEnd: () => void;
+  userId?: string;
 }
 
 // You need to create an agent in ElevenLabs dashboard and get the agent ID
 const ELEVENLABS_AGENT_ID = "agent_4501k9q5jxvtf5fr6dct0se3zad6";
 
-export const VoiceDebate = ({ config, onEnd }: VoiceDebateProps) => {
+export const VoiceDebate = ({ config, onEnd, userId }: VoiceDebateProps) => {
   const [timeLog, setTimeLog] = useState({
     userTotal: 0,
     aiTotal: 0,
@@ -74,11 +75,9 @@ export const VoiceDebate = ({ config, onEnd }: VoiceDebateProps) => {
       await conversation.endSession();
       
       // Save debate to database
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
+      if (userId) {
         const { error } = await supabase.from("debates").insert({
-          user_id: user.id,
+          user_id: userId,
           topic: config.topic,
           difficulty: config.difficulty,
           side: config.side,
