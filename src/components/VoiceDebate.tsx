@@ -24,6 +24,9 @@ export const VoiceDebate = ({ config, onEnd, userId }: VoiceDebateProps) => {
     aiTotal: 0,
   });
   const [isConnecting, setIsConnecting] = useState(false);
+  const [transcript, setTranscript] = useState<Array<{speaker: string, text: string, timestamp: number}>>([]);
+  const [currentSpeaker, setCurrentSpeaker] = useState<"user" | "ai" | null>(null);
+  const [speakingStartTime, setSpeakingStartTime] = useState<number | null>(null);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -36,6 +39,18 @@ export const VoiceDebate = ({ config, onEnd, userId }: VoiceDebateProps) => {
     },
     onMessage: (message) => {
       console.log("Message received:", message);
+      
+      // Track transcript
+      if (message && typeof message === "object") {
+        const msg = message as any;
+        if (msg.message && typeof msg.message === "object") {
+          setTranscript(prev => [...prev, {
+            speaker: msg.message.role === "user" ? "user" : "ai",
+            text: msg.message.content || "",
+            timestamp: Date.now()
+          }]);
+        }
+      }
     },
     onError: (error) => {
       console.error("Conversation error:", error);
@@ -74,23 +89,42 @@ export const VoiceDebate = ({ config, onEnd, userId }: VoiceDebateProps) => {
     try {
       await conversation.endSession();
       
-      // Save debate to database
       if (userId) {
+        toast.info("Analyzing debate performance...");
+        
+        // Call edge function to analyze debate
+        const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-debate', {
+          body: {
+            transcript,
+            timeLog,
+            config
+          }
+        });
+
+        let scores = null;
+        if (analysisError) {
+          console.error("Error analyzing debate:", analysisError);
+          toast.error("Could not analyze performance");
+        } else {
+          scores = analysisData;
+        }
+
+        // Save debate to database
         const { error } = await supabase.from("debates").insert({
           user_id: userId,
           topic: config.topic,
           difficulty: config.difficulty,
           side: config.side,
           allocated_time: config.allocatedTime,
-          transcript: null,
-          scores: null,
+          transcript: transcript.length > 0 ? transcript : null,
+          scores: scores,
         });
 
         if (error) {
           console.error("Error saving debate:", error);
           toast.error("Debate saved locally but couldn't sync to your history");
         } else {
-          toast.success("Debate saved to your history");
+          toast.success("Debate saved with performance analysis");
         }
       }
       
@@ -111,6 +145,22 @@ export const VoiceDebate = ({ config, onEnd, userId }: VoiceDebateProps) => {
 
   const isConnected = conversation.status === "connected";
   const isSpeaking = conversation.isSpeaking;
+
+  // Track speaking time
+  useEffect(() => {
+    if (isSpeaking && currentSpeaker !== "ai") {
+      setCurrentSpeaker("ai");
+      setSpeakingStartTime(Date.now());
+    } else if (!isSpeaking && currentSpeaker === "ai" && speakingStartTime) {
+      const duration = (Date.now() - speakingStartTime) / 1000;
+      setTimeLog(prev => ({
+        ...prev,
+        aiTotal: prev.aiTotal + duration
+      }));
+      setCurrentSpeaker(null);
+      setSpeakingStartTime(null);
+    }
+  }, [isSpeaking, currentSpeaker, speakingStartTime]);
 
   return (
     <div className="min-h-screen p-4 bg-gradient-to-br from-background via-background to-muted">

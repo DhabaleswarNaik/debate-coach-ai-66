@@ -6,6 +6,7 @@ import { DebateSetup, DebateConfig } from "@/components/DebateSetup";
 import { VoiceDebate } from "@/components/VoiceDebate";
 import { DebateFeedback } from "@/components/DebateFeedback";
 import { Button } from "@/components/ui/button";
+import { History } from "lucide-react";
 
 type DebateState = "setup" | "active" | "feedback";
 
@@ -70,7 +71,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex gap-2">
+        {state === "setup" && (
+          <Button variant="outline" onClick={() => navigate("/dashboard")}>
+            <History className="w-4 h-4 mr-2" />
+            History
+          </Button>
+        )}
         <Button variant="outline" onClick={handleLogout}>
           Logout
         </Button>
@@ -81,6 +88,7 @@ const Index = () => {
         <DebateFeedback 
           config={config}
           onNewDebate={handleNewDebate}
+          userId={user?.id}
         />
       )}
     </div>
