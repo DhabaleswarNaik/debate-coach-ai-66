@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Trophy, Clock, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { PerformanceCharts } from "@/components/PerformanceCharts";
 
 interface Debate {
   id: string;
@@ -90,7 +91,12 @@ export default function Dashboard() {
             <Button onClick={() => navigate("/")}>Start First Debate</Button>
           </Card>
         ) : (
-          <div className="grid gap-4">
+          <div className="space-y-6">
+            <PerformanceCharts debates={debates} />
+            
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Debate History</h2>
+              <div className="grid gap-4">
             {debates.map((debate) => (
               <Card 
                 key={debate.id} 
@@ -133,6 +139,8 @@ export default function Dashboard() {
                 </div>
               </Card>
             ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
