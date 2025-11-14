@@ -143,7 +143,7 @@ export default function DebateDetail() {
               </div>
             </div>
 
-            {debate.scores?.final_score !== undefined && (
+            {debate.scores?.final_score !== undefined ? (
               <div className="flex items-center gap-3 pt-4 border-t">
                 <Trophy className="w-8 h-8 text-accent" />
                 <div>
@@ -151,9 +151,31 @@ export default function DebateDetail() {
                   <p className="text-4xl font-bold text-accent">{debate.scores.final_score}/100</p>
                 </div>
               </div>
+            ) : (
+              <div className="pt-4 border-t">
+                <p className="text-sm text-muted-foreground">
+                  Performance analysis not available for this debate
+                </p>
+              </div>
             )}
           </div>
         </Card>
+
+        {!debate.scores && !debate.transcript && (
+          <Card className="p-8 text-center">
+            <Trophy className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h2 className="text-xl font-semibold mb-2">No Performance Data Available</h2>
+            <p className="text-muted-foreground mb-6">
+              This debate doesn't have performance metrics or transcript data. This could happen if:
+            </p>
+            <ul className="text-sm text-muted-foreground text-left max-w-md mx-auto space-y-2 mb-6">
+              <li>• The debate wasn't completed</li>
+              <li>• The analysis process encountered an error</li>
+              <li>• This debate was created before the scoring system was added</li>
+            </ul>
+            <Button onClick={() => navigate("/")}>Start a New Debate</Button>
+          </Card>
+        )}
 
         {debate.scores && (
           <>
