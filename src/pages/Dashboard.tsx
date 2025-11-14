@@ -92,7 +92,11 @@ export default function Dashboard() {
         ) : (
           <div className="grid gap-4">
             {debates.map((debate) => (
-              <Card key={debate.id} className="p-6 hover:shadow-md transition-shadow">
+              <Card 
+                key={debate.id} 
+                className="p-6 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => navigate(`/debate/${debate.id}`)}
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-3">
                     <div>
@@ -106,41 +110,6 @@ export default function Dashboard() {
                         </Badge>
                       </div>
                     </div>
-
-                    {debate.scores && (
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-4 border-t">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Argument Quality</p>
-                          <p className="text-lg font-semibold text-primary">
-                            {debate.scores.argument_quality?.score || 0}/30
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Relevance</p>
-                          <p className="text-lg font-semibold text-primary">
-                            {debate.scores.relevance?.score || 0}/20
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Fluency</p>
-                          <p className="text-lg font-semibold text-primary">
-                            {debate.scores.fluency?.score || 0}/20
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Timing</p>
-                          <p className="text-lg font-semibold text-primary">
-                            {debate.scores.timing_and_rules?.score || 0}/15
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Engagement</p>
-                          <p className="text-lg font-semibold text-primary">
-                            {debate.scores.engagement_rebuttal?.score || 0}/15
-                          </p>
-                        </div>
-                      </div>
-                    )}
 
                     {debate.scores && debate.scores.final_score !== undefined && (
                       <div className="pt-3 border-t">
