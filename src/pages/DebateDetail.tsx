@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Download, Trophy, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Download, Trophy, Clock, AlertTriangle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +31,7 @@ export default function DebateDetail() {
   const { id } = useParams();
   const [debate, setDebate] = useState<Debate | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reanalyzing, setReanalyzing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,6 +108,54 @@ export default function DebateDetail() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const reanalyzeDebate = async () => {
+    if (!debate) return;
+
+    setReanalyzing(true);
+    toast.info("Analyzing debate...");
+
+    try {
+      // Call the analyze-debate edge function
+      const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
+        'analyze-debate',
+        {
+          body: {
+            transcript: debate.transcript || [],
+            timeLog: {
+              userTotal: 0,
+              aiTotal: 0
+            },
+            config: {
+              topic: debate.topic,
+              difficulty: debate.difficulty,
+              side: debate.side,
+              allocatedTime: debate.allocated_time
+            }
+          }
+        }
+      );
+
+      if (analysisError) throw analysisError;
+
+      // Update the debate with the new scores
+      const { error: updateError } = await supabase
+        .from('debates')
+        .update({ scores: analysisData })
+        .eq('id', debate.id);
+
+      if (updateError) throw updateError;
+
+      // Refresh the debate data
+      await fetchDebate();
+      toast.success("Debate analyzed successfully!");
+    } catch (error) {
+      console.error("Error reanalyzing debate:", error);
+      toast.error("Failed to analyze debate. Please try again.");
+    } finally {
+      setReanalyzing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -173,7 +222,13 @@ export default function DebateDetail() {
               <li>• The analysis process encountered an error</li>
               <li>• This debate was created before the scoring system was added</li>
             </ul>
-            <Button onClick={() => navigate("/")}>Start a New Debate</Button>
+            <div className="flex gap-3 justify-center">
+              <Button onClick={reanalyzeDebate} disabled={reanalyzing}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${reanalyzing ? 'animate-spin' : ''}`} />
+                {reanalyzing ? 'Analyzing...' : 'Re-analyze Debate'}
+              </Button>
+              <Button variant="outline" onClick={() => navigate("/")}>Start a New Debate</Button>
+            </div>
           </Card>
         )}
 
