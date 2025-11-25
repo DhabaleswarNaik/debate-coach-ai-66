@@ -72,9 +72,46 @@ export const VoiceDebate = ({ config, onEnd, userId }: VoiceDebateProps) => {
 
       console.log("Starting conversation with signed URL");
       
-      // Start the conversation
+      // Determine AI's side (opposite of user's side)
+      const aiSide = config.side === "proposition" ? "opposition" : "proposition";
+      
+      // Create debate-specific prompt and first message
+      const debatePrompt = `You are an AI debate opponent in a structured debate. 
+
+DEBATE DETAILS:
+- Topic: "${config.topic}"
+- Your Side: ${aiSide.toUpperCase()}
+- Difficulty Level: ${config.difficulty}
+- Speaking Time Limit: ${config.allocatedTime} seconds per turn
+
+RULES:
+1. You must argue ONLY for the ${aiSide} side
+2. Keep each response under ${config.allocatedTime} seconds
+3. Use clear, logical arguments with evidence
+4. Follow standard debate structure: claim, evidence, reasoning
+5. Be respectful and professional
+6. Do NOT ask the user for debate parameters - they are already set
+
+DIFFICULTY GUIDELINES:
+${config.difficulty === "easy" ? "- Use simple arguments\n- Speak slowly and clearly\n- Focus on 1-2 main points" : 
+  config.difficulty === "medium" ? "- Use moderate complexity arguments\n- Include some evidence and reasoning\n- Cover 2-3 main points" :
+  "- Use sophisticated arguments\n- Include detailed evidence and counter-arguments\n- Address multiple perspectives"}
+
+Start immediately with your opening argument for the ${aiSide} side.`;
+
+      const firstMessage = `I will argue for the ${aiSide} side of this debate. Let me begin with my opening argument.`;
+      
+      // Start the conversation with overrides
       await conversation.startSession({
         signedUrl: data.signedUrl,
+        overrides: {
+          agent: {
+            prompt: {
+              prompt: debatePrompt
+            },
+            firstMessage: firstMessage
+          }
+        }
       });
 
       setIsConnecting(false);
