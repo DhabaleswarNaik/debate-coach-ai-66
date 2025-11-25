@@ -13,11 +13,6 @@ serve(async (req) => {
   try {
     const { transcript, timeLog, config } = await req.json();
 
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      throw new Error("LOVABLE_API_KEY not configured");
-    }
-
     // Use Lovable AI to analyze the debate
     const analysisPrompt = `You are an expert debate judge. Analyze this debate and provide detailed scoring based on the following rubric:
 
@@ -81,13 +76,10 @@ Return a JSON response in this EXACT format:
   }
 }`;
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("https://api.lovable.app/v1/ai/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${lovableApiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://lovable.dev",
-        "X-Title": "AI Debate Partner",
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
