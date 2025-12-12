@@ -118,18 +118,18 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label>Your Side</Label>
+            <Label>AI Side (You will argue the opposite)</Label>
             <RadioGroup value={side} onValueChange={(v) => setSide(v as any)}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="proposition" id="proposition" />
                 <Label htmlFor="proposition" className="font-normal cursor-pointer">
-                  Proposition - Arguing for the motion
+                  Proposition - AI argues for the motion (You argue against)
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="opposition" id="opposition" />
                 <Label htmlFor="opposition" className="font-normal cursor-pointer">
-                  Opposition - Arguing against the motion
+                  Opposition - AI argues against the motion (You argue for)
                 </Label>
               </div>
             </RadioGroup>
