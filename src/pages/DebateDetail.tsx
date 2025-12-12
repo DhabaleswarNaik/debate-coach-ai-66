@@ -242,11 +242,12 @@ export default function DebateDetail() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold">Argument Quality</h3>
                       <span className="text-lg font-bold text-primary">
-                        {debate.scores.argument_quality?.score || 0}/{debate.scores.argument_quality?.max || 30}
+                        {debate.scores.scores?.argument_quality?.score || debate.scores.argument_quality?.score || 0}/
+                        {debate.scores.scores?.argument_quality?.max || debate.scores.argument_quality?.max || 30}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {debate.scores.argument_quality?.notes || "No notes available"}
+                      {debate.scores.scores?.argument_quality?.notes || debate.scores.argument_quality?.notes || "No notes available"}
                     </p>
                   </div>
 
@@ -254,11 +255,12 @@ export default function DebateDetail() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold">Relevance to Topic</h3>
                       <span className="text-lg font-bold text-primary">
-                        {debate.scores.relevance?.score || 0}/{debate.scores.relevance?.max || 20}
+                        {debate.scores.scores?.relevance?.score || debate.scores.relevance?.score || 0}/
+                        {debate.scores.scores?.relevance?.max || debate.scores.relevance?.max || 20}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {debate.scores.relevance?.notes || "No notes available"}
+                      {debate.scores.scores?.relevance?.notes || debate.scores.relevance?.notes || "No notes available"}
                     </p>
                   </div>
 
@@ -266,23 +268,12 @@ export default function DebateDetail() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold">Fluency & Delivery</h3>
                       <span className="text-lg font-bold text-primary">
-                        {debate.scores.fluency?.score || 0}/{debate.scores.fluency?.max || 20}
+                        {debate.scores.scores?.fluency?.score || debate.scores.fluency?.score || 0}/
+                        {debate.scores.scores?.fluency?.max || debate.scores.fluency?.max || 20}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {debate.scores.fluency?.notes || "No notes available"}
-                    </p>
-                  </div>
-
-                  <div className="p-4 bg-muted/50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold">Timing & Rule Adherence</h3>
-                      <span className="text-lg font-bold text-primary">
-                        {debate.scores.timing_and_rules?.score || 0}/{debate.scores.timing_and_rules?.max || 15}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {debate.scores.timing_and_rules?.notes || "No notes available"}
+                      {debate.scores.scores?.fluency?.notes || debate.scores.fluency?.notes || "No notes available"}
                     </p>
                   </div>
 
@@ -290,18 +281,19 @@ export default function DebateDetail() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold">Engagement & Rebuttal</h3>
                       <span className="text-lg font-bold text-primary">
-                        {debate.scores.engagement_rebuttal?.score || 0}/{debate.scores.engagement_rebuttal?.max || 15}
+                        {debate.scores.scores?.engagement_rebuttal?.score || debate.scores.engagement_rebuttal?.score || 0}/
+                        {debate.scores.scores?.engagement_rebuttal?.max || debate.scores.engagement_rebuttal?.max || 30}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {debate.scores.engagement_rebuttal?.notes || "No notes available"}
+                      {debate.scores.scores?.engagement_rebuttal?.notes || debate.scores.engagement_rebuttal?.notes || "No notes available"}
                     </p>
                   </div>
                 </div>
               </div>
             </Card>
 
-            {debate.scores.penalties && debate.scores.penalties.length > 0 && (
+            {((debate.scores.penalties && debate.scores.penalties.length > 0)) && (
               <Card className="p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <AlertTriangle className="w-5 h-5 text-destructive" />
@@ -312,7 +304,7 @@ export default function DebateDetail() {
                     <div key={idx} className="p-3 bg-destructive/10 rounded-lg">
                       <div className="flex items-center justify-between">
                         <span className="font-medium capitalize">{penalty.type}</span>
-                        <span className="text-destructive font-bold">{penalty.amount_points} points</span>
+                        <span className="text-destructive font-bold">-{penalty.amount_points} points</span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">{penalty.details}</p>
                     </div>
@@ -321,11 +313,12 @@ export default function DebateDetail() {
               </Card>
             )}
 
-            {debate.scores.advice?.user && debate.scores.advice.user.length > 0 && (
+            {((debate.scores.advice && Array.isArray(debate.scores.advice) && debate.scores.advice.length > 0) || 
+              (debate.scores.advice?.user && debate.scores.advice.user.length > 0)) && (
               <Card className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Tips for Improvement</h2>
                 <ul className="space-y-2">
-                  {debate.scores.advice.user.map((tip: string, idx: number) => (
+                  {(Array.isArray(debate.scores.advice) ? debate.scores.advice : debate.scores.advice?.user || []).map((tip: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="text-accent font-bold">•</span>
                       <span className="text-sm">{tip}</span>
