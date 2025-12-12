@@ -119,14 +119,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     setIsAISpeaking(true);
     
     try {
-      // Use ElevenLabs TTS via edge function
+      // Try ElevenLabs TTS via edge function
       const { data, error } = await supabase.functions.invoke("text-to-speech", {
         body: { text, language: config.language },
       });
 
-      if (error) {
-        console.error("TTS error:", error);
-        // Fallback to browser TTS
+      // If error or data is JSON (error response), fallback to browser TTS
+      if (error || !data || data instanceof ArrayBuffer === false) {
+        console.log("Using browser TTS (ElevenLabs unavailable)");
         return fallbackSpeak(text, startTime);
       }
 
@@ -146,14 +146,12 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
         };
         
         audio.onerror = () => {
-          console.error("Audio playback error, using fallback");
           setIsAISpeaking(false);
           URL.revokeObjectURL(audioUrl);
           fallbackSpeak(text, startTime).then(resolve);
         };
         
-        audio.play().catch((e) => {
-          console.error("Audio play failed:", e);
+        audio.play().catch(() => {
           setIsAISpeaking(false);
           fallbackSpeak(text, startTime).then(resolve);
         });
