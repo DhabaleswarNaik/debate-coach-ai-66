@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,8 +30,16 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [debateStarted, setDebateStarted] = useState(false);
   
   const recognitionRef = useRef<any>(null);
+  const isRecordingRef = useRef(false);
   const userStartTimeRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const accumulatedTextRef = useRef("");
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   // Initialize Speech Recognition
   useEffect(() => {
@@ -48,39 +56,40 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     recognition.lang = config.language === "hi" ? "hi-IN" : "en-US";
 
     recognition.onresult = (event: any) => {
-      let interimTranscript = "";
       let finalTranscript = "";
+      let interimTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
+        const transcriptText = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += transcript;
+          finalTranscript += transcriptText + " ";
         } else {
-          interimTranscript += transcript;
+          interimTranscript += transcriptText;
         }
       }
 
-      setCurrentUserText(prev => prev + finalTranscript);
-      
-      if (interimTranscript) {
-        // Show interim results as we speak
+      if (finalTranscript) {
+        accumulatedTextRef.current += finalTranscript;
+        setCurrentUserText(accumulatedTextRef.current + interimTranscript);
+      } else if (interimTranscript) {
+        setCurrentUserText(accumulatedTextRef.current + interimTranscript);
       }
     };
 
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error);
-      if (event.error !== "no-speech") {
+      if (event.error !== "no-speech" && event.error !== "aborted") {
         toast.error(`Speech recognition error: ${event.error}`);
       }
     };
 
     recognition.onend = () => {
-      if (isRecording) {
-        // Restart if still recording
+      // Use ref to check current recording state
+      if (isRecordingRef.current) {
         try {
           recognition.start();
         } catch (e) {
-          console.log("Recognition already started");
+          console.log("Recognition restart failed:", e);
         }
       }
     };
@@ -89,7 +98,11 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // Ignore
+        }
       }
     };
   }, [config.language]);
@@ -101,21 +114,68 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     }
   }, [transcript, currentUserText]);
 
-  const speakText = (text: string): Promise<void> => {
+  const speakText = useCallback(async (text: string): Promise<void> => {
+    const startTime = Date.now();
+    setIsAISpeaking(true);
+    
+    try {
+      // Use ElevenLabs TTS via edge function
+      const { data, error } = await supabase.functions.invoke("text-to-speech", {
+        body: { text, language: config.language },
+      });
+
+      if (error) {
+        console.error("TTS error:", error);
+        // Fallback to browser TTS
+        return fallbackSpeak(text, startTime);
+      }
+
+      const audioBlob = new Blob([data], { type: "audio/mpeg" });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      return new Promise((resolve) => {
+        const audio = new Audio(audioUrl);
+        audioRef.current = audio;
+        
+        audio.onended = () => {
+          const duration = (Date.now() - startTime) / 1000;
+          setTimeLog(prev => ({ ...prev, aiTotal: prev.aiTotal + duration }));
+          setIsAISpeaking(false);
+          URL.revokeObjectURL(audioUrl);
+          resolve();
+        };
+        
+        audio.onerror = () => {
+          console.error("Audio playback error, using fallback");
+          setIsAISpeaking(false);
+          URL.revokeObjectURL(audioUrl);
+          fallbackSpeak(text, startTime).then(resolve);
+        };
+        
+        audio.play().catch((e) => {
+          console.error("Audio play failed:", e);
+          setIsAISpeaking(false);
+          fallbackSpeak(text, startTime).then(resolve);
+        });
+      });
+    } catch (error) {
+      console.error("TTS failed, using fallback:", error);
+      return fallbackSpeak(text, startTime);
+    }
+  }, [config.language]);
+
+  const fallbackSpeak = (text: string, startTime: number): Promise<void> => {
     return new Promise((resolve) => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = config.language === "hi" ? "hi-IN" : "en-US";
       utterance.rate = 0.9;
       
-      // Try to find a voice for the language
       const voices = speechSynthesis.getVoices();
       const langCode = config.language === "hi" ? "hi" : "en";
       const matchingVoice = voices.find(v => v.lang.startsWith(langCode));
       if (matchingVoice) {
         utterance.voice = matchingVoice;
       }
-
-      const startTime = Date.now();
       
       utterance.onend = () => {
         const duration = (Date.now() - startTime) / 1000;
@@ -138,7 +198,6 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     setIsProcessing(true);
     
     try {
-      // Add user message to transcript
       const userEntry: TranscriptEntry = {
         speaker: "user",
         text: userText,
@@ -146,7 +205,6 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       };
       setTranscript(prev => [...prev, userEntry]);
 
-      // Get AI response from edge function
       const { data, error } = await supabase.functions.invoke('debate-ai', {
         body: {
           action: "respond",
@@ -166,7 +224,6 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
 
       const aiText = data.response;
       
-      // Add AI response to transcript
       setTranscript(prev => [...prev, {
         speaker: "ai",
         text: aiText,
@@ -174,8 +231,6 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       }]);
 
       setIsProcessing(false);
-
-      // Speak the AI response
       await speakText(aiText);
       
     } catch (error) {
@@ -187,12 +242,6 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
 
   const startDebate = async () => {
     setDebateStarted(true);
-    
-    // AI starts with opening argument
-    const aiSide = config.side === "proposition" ? "opposition" : "proposition";
-    const openingPrompt = config.language === "hi" 
-      ? `मैं इस विषय पर ${aiSide === "proposition" ? "पक्ष" : "विपक्ष"} में अपना तर्क प्रस्तुत करता हूं।`
-      : `I will argue for the ${aiSide} side of this debate. Let me present my opening argument.`;
 
     try {
       setIsProcessing(true);
@@ -240,6 +289,8 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       return;
     }
 
+    // Reset accumulated text
+    accumulatedTextRef.current = "";
     setCurrentUserText("");
     userStartTimeRef.current = Date.now();
     
@@ -256,8 +307,15 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const stopRecording = async () => {
     if (!recognitionRef.current) return;
 
-    recognitionRef.current.stop();
+    // Stop recognition first
     setIsRecording(false);
+    isRecordingRef.current = false;
+    
+    try {
+      recognitionRef.current.stop();
+    } catch (e) {
+      // Ignore
+    }
 
     // Calculate user speaking time
     if (userStartTimeRef.current) {
@@ -266,22 +324,32 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       userStartTimeRef.current = null;
     }
 
-    const userText = currentUserText.trim();
+    // Get the accumulated text
+    const userText = accumulatedTextRef.current.trim() || currentUserText.trim();
     
     if (userText) {
       await getAIResponse(userText);
     } else {
-      toast.info(config.language === "hi" ? "कोई भाषण नहीं मिला" : "No speech detected");
+      toast.info(config.language === "hi" ? "कोई भाषण नहीं मिला" : "No speech detected. Please try speaking louder.");
     }
     
+    accumulatedTextRef.current = "";
     setCurrentUserText("");
   };
 
   const handleEndDebate = async () => {
-    // Stop any ongoing speech
+    // Stop any ongoing audio/speech
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     speechSynthesis.cancel();
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // Ignore
+      }
     }
 
     if (userId && transcript.length > 0) {
@@ -409,12 +477,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
                 </Button>
               )}
 
-              {isRecording && currentUserText && (
+              {isRecording && (
                 <div className="w-full p-3 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">
                     {config.language === "hi" ? "आप कह रहे हैं:" : "You're saying:"}
                   </p>
-                  <p className="text-foreground">{currentUserText}</p>
+                  <p className="text-foreground min-h-[24px]">
+                    {currentUserText || (config.language === "hi" ? "बोलना शुरू करें..." : "Start speaking...")}
+                  </p>
                 </div>
               )}
             </div>
@@ -427,7 +497,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
             {config.language === "hi" ? "बातचीत का रिकॉर्ड" : "Conversation Transcript"}
           </h3>
           <ScrollArea className="h-[300px]" ref={scrollRef as any}>
-        {transcript.length === 0 ? (
+            {transcript.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
                 {config.language === "hi" ? "अभी तक कोई बातचीत नहीं" : "No conversation yet"}
               </p>

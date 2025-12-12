@@ -1,82 +1,79 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { text, voiceId } = await req.json();
-    
+    const { text, language } = await req.json();
+    const ELEVENLABS_API_KEY = Deno.env.get("ELEVEN_LABS_API_KEY");
+
+    if (!ELEVENLABS_API_KEY) {
+      throw new Error("ELEVEN_LABS_API_KEY not configured");
+    }
+
     if (!text) {
-      throw new Error('Text is required');
+      throw new Error("Text is required");
     }
 
-    const ELEVEN_LABS_API_KEY = Deno.env.get('ELEVEN_LABS_API_KEY');
-    
-    if (!ELEVEN_LABS_API_KEY) {
-      throw new Error('ElevenLabs API key is not configured');
-    }
+    // Choose voice based on language
+    // George for English (clear, professional), Lily for Hindi (multilingual)
+    const voiceId = language === "hi" 
+      ? "pFZP5JQG7iQjIQuC4Bku" // Lily - good for multiple languages
+      : "JBFqnCBsd6RMkjVDRZzb"; // George - clear English voice
 
-    // Use a professional voice for debate (default to Roger - CwhRBWXzGAHq8TQ4Fs17)
-    const selectedVoiceId = voiceId || 'CwhRBWXzGAHq8TQ4Fs17';
+    console.log(`Generating TTS for language: ${language}, voice: ${voiceId}, text length: ${text.length}`);
 
-    // Call ElevenLabs API
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Accept': 'audio/mpeg',
-          'xi-api-key': ELEVEN_LABS_API_KEY,
-          'Content-Type': 'application/json',
+          "xi-api-key": ELEVENLABS_API_KEY,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           text,
-          model_id: 'eleven_turbo_v2',
+          model_id: "eleven_multilingual_v2",
+          output_format: "mp3_44100_128",
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.5,
-            use_speaker_boost: true
-          }
+            stability: 0.6,
+            similarity_boost: 0.8,
+            style: 0.4,
+            use_speaker_boost: true,
+            speed: 1.0,
+          },
         }),
       }
     );
 
     if (!response.ok) {
-      const error = await response.text();
-      console.error('ElevenLabs API error:', error);
-      throw new Error(`Failed to generate speech: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error("ElevenLabs API error:", response.status, errorText);
+      throw new Error(`ElevenLabs API error: ${response.status}`);
     }
 
-    // Get the audio buffer
     const audioBuffer = await response.arrayBuffer();
-    
-    // Convert to base64
-    const base64Audio = btoa(
-      String.fromCharCode(...new Uint8Array(audioBuffer))
-    );
 
+    return new Response(audioBuffer, {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "audio/mpeg",
+      },
+    });
+  } catch (error) {
+    console.error("TTS error:", error);
     return new Response(
-      JSON.stringify({ audioContent: base64Audio }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
-} catch (error) {
-    console.error('text-to-speech error:', error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
