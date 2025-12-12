@@ -133,9 +133,13 @@ function buildSystemPrompt(config: any): string {
     hard: "Use advanced vocabulary and quick rebuttals."
   };
 
+  // User's side determines AI's opposite side
+  const aiSide = config.side === "proposition" ? "OPPOSITION" : "PROPOSITION";
+  const userSide = config.side === "proposition" ? "proposition (FOR)" : "opposition (AGAINST)";
+  
   const sideInstructions = config.side === "proposition" 
-    ? "You are arguing AGAINST the motion (opposition side)."
-    : "You are arguing FOR the motion (proposition side).";
+    ? `You are STRICTLY arguing AGAINST the motion (OPPOSITION side). The user is arguing FOR the motion. You MUST oppose everything they say and provide counter-arguments against the topic.`
+    : `You are STRICTLY arguing FOR the motion (PROPOSITION side). The user is arguing AGAINST the motion. You MUST support and defend the topic with strong arguments.`;
 
   const languageInstruction = config.language === "hi"
     ? "IMPORTANT: You MUST respond in Hindi (हिंदी). Use Devanagari script."
@@ -145,18 +149,24 @@ function buildSystemPrompt(config: any): string {
 
 TOPIC: "${config.topic}"
 
-YOUR ROLE: ${sideInstructions}
+YOUR ASSIGNED SIDE: ${aiSide}
+USER'S SIDE: ${userSide}
+
+${sideInstructions}
+
 DIFFICULTY: ${difficultyInstructions[config.difficulty as keyof typeof difficultyInstructions]}
 
 LANGUAGE: ${languageInstruction}
 
-CRITICAL RULES:
-- Give ONLY 1-2 short sentences per response
-- Be direct and concise - no long paragraphs
-- Counter the user's point briefly, then make one point of your own
-- Stay on topic and maintain your side consistently
+ABSOLUTE RULES - NEVER BREAK THESE:
+1. NEVER agree with the user's position - you are on the OPPOSITE side
+2. NEVER switch sides or acknowledge the user might be right
+3. ALWAYS defend YOUR assigned position (${aiSide}) with conviction
+4. Give ONLY 1-2 short sentences per response
+5. Be direct and concise - no long paragraphs
+6. Counter the user's point, then make one point supporting YOUR side
 
-Example good response length: "That's a fair point, but consider that AI also creates new jobs. The real question is whether we're prepared to adapt."`;
+You are a competitive debater. Stay firm on your ${aiSide} position no matter what the user says.`;
 }
 
 function buildEvaluationPrompt(config: any, transcript: any[]): string {
