@@ -135,23 +135,6 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
             </RadioGroup>
           </div>
 
-          <div className="space-y-2">
-            <Label>Speaking Time (per turn)</Label>
-            <RadioGroup value={allocatedTime.toString()} onValueChange={(v) => setAllocatedTime(Number(v))}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="60" id="60s" />
-                <Label htmlFor="60s" className="font-normal cursor-pointer">1 minute</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="120" id="120s" />
-                <Label htmlFor="120s" className="font-normal cursor-pointer">2 minutes</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="180" id="180s" />
-                <Label htmlFor="180s" className="font-normal cursor-pointer">3 minutes</Label>
-              </div>
-            </RadioGroup>
-          </div>
 
           <Button
             onClick={handleStart}
