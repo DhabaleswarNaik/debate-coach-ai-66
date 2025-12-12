@@ -18,6 +18,11 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
+    // Format transcript as "AI:" and "User:" format
+    const formattedTranscript = transcript.map((entry: any) => 
+      `${entry.speaker === "user" ? "User" : "AI"}: ${entry.text}`
+    ).join("\n\n");
+
     // Use Lovable AI to analyze the debate
     const analysisPrompt = `You are an expert debate judge. Analyze this debate and provide detailed scoring based on the following rubric:
 
@@ -25,13 +30,9 @@ Debate Config:
 - Topic: ${config.topic}
 - Difficulty: ${config.difficulty}
 - Side: ${config.side}
-- Allocated Time: ${config.allocatedTime}s per turn
 
 Transcript:
-${JSON.stringify(transcript, null, 2)}
-
-Time Log:
-${JSON.stringify(timeLog, null, 2)}
+${formattedTranscript}
 
 SCORING RUBRIC (Total = 100 points):
 
@@ -45,23 +46,17 @@ SCORING RUBRIC (Total = 100 points):
    - Staying on-side (0–5)
 
 3. Fluency & Delivery — 20 points
-   - Speech rate and smoothness (0–10)
-   - Pronunciation & clarity (0–5)
-   - Smooth transitions (0–5)
+   - Speech smoothness (0–10)
+   - Clarity (0–5)
+   - Natural flow (0–5)
 
-4. Timing & Rule Adherence — 15 points
-   - Stayed within allocated time (0–8)
-   - Proper turn-taking (0–4)
-   - Followed debate rules (0–3)
-
-5. Engagement & Rebuttal — 15 points
-   - Addressed opponent's points (0–8)
-   - Use of rebuttal techniques (0–7)
+4. Engagement & Rebuttal — 30 points
+   - Addressed opponent's points (0–15)
+   - Use of rebuttal techniques (0–15)
 
 PENALTIES:
-- Time overrun: -2 points per 5 seconds overtime
-- Speaking out of turn: -5 per incident
 - Off-topic: up to -10 points
+- Personal attacks: -5 per incident
 
 Return a JSON response in this EXACT format:
 {
@@ -69,16 +64,11 @@ Return a JSON response in this EXACT format:
     "argument_quality": {"score": number, "max": 30, "notes": "string"},
     "relevance": {"score": number, "max": 20, "notes": "string"},
     "fluency": {"score": number, "max": 20, "notes": "string"},
-    "timing_and_rules": {"score": number, "max": 15, "notes": "string"},
-    "engagement_rebuttal": {"score": number, "max": 15, "notes": "string"}
+    "engagement_rebuttal": {"score": number, "max": 30, "notes": "string"}
   },
-  "penalties": [{"type": "string", "speaker": "string", "amount_points": number, "details": "string"}],
+  "penalties": [{"type": "string", "amount_points": number, "details": "string"}],
   "final_score": number,
-  "violations": [{"violation": "string", "speaker": "string", "time_s": number}],
-  "advice": {
-    "user": ["string", "string"],
-    "ai": []
-  }
+  "advice": ["string", "string"]
 }`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

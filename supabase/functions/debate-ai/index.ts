@@ -128,9 +128,9 @@ serve(async (req) => {
 
 function buildSystemPrompt(config: any): string {
   const difficultyInstructions = {
-    easy: "Use simpler vocabulary, fewer nested claims, and more explicit signposting. Be forgiving in your approach.",
-    medium: "Use balanced arguments with moderate complexity and normal pace. Provide constructive feedback.",
-    hard: "Use advanced vocabulary, multi-layered arguments, and quick rebuttals. Be strict in your evaluation."
+    easy: "Use simpler vocabulary and be forgiving.",
+    medium: "Use balanced arguments with moderate complexity.",
+    hard: "Use advanced vocabulary and quick rebuttals."
   };
 
   const sideInstructions = config.side === "proposition" 
@@ -141,7 +141,7 @@ function buildSystemPrompt(config: any): string {
     ? "IMPORTANT: You MUST respond in Hindi (हिंदी). Use Devanagari script."
     : "Respond in English.";
 
-  return `You are an AI Debate Partner acting as a ${config.difficulty} difficulty opponent.
+  return `You are an AI Debate Partner.
 
 TOPIC: "${config.topic}"
 
@@ -150,18 +150,21 @@ DIFFICULTY: ${difficultyInstructions[config.difficulty as keyof typeof difficult
 
 LANGUAGE: ${languageInstruction}
 
-RULES:
-- Each speaker has ${config.allocatedTime} seconds per turn
-- Keep responses concise (2-3 paragraphs max) so they can be spoken aloud
-- Build arguments with: Claim → Reasoning/Evidence → Example → Conclusion
-- On rebuttals, reference opponent's claims explicitly
+CRITICAL RULES:
+- Give ONLY 1-2 short sentences per response
+- Be direct and concise - no long paragraphs
+- Counter the user's point briefly, then make one point of your own
 - Stay on topic and maintain your side consistently
-- Be professional and engaging
 
-Your goal is to provide a challenging but educational debate experience. Structure your arguments clearly and help the user improve their debating skills.`;
+Example good response length: "That's a fair point, but consider that AI also creates new jobs. The real question is whether we're prepared to adapt."`;
 }
 
 function buildEvaluationPrompt(config: any, transcript: any[]): string {
+  // Format transcript as "AI:" and "User:" format
+  const formattedTranscript = transcript.map((entry: any) => 
+    `${entry.speaker === "user" ? "User" : "AI"}: ${entry.text}`
+  ).join("\n\n");
+
   return `You are an impartial debate judge evaluating a debate session.
 
 TOPIC: "${config.topic}"
@@ -181,27 +184,21 @@ Evaluate the USER's performance (not the AI's) based on this scoring rubric:
 3. Fluency & Delivery (20 points):
    - Speech smoothness (0-10)
    - Clarity (0-5)
-   - Pauses and transitions (0-5)
+   - Natural flow (0-5)
 
-4. Timing & Rules (15 points):
-   - Time adherence (0-8)
-   - Turn-taking (0-4)
-   - Rule following (0-3)
-
-5. Engagement & Rebuttal (15 points):
-   - Addressing opponent (0-8)
-   - Rebuttal techniques (0-7)
+4. Engagement & Rebuttal (30 points):
+   - Addressing opponent's points (0-15)
+   - Rebuttal techniques (0-15)
 
 TRANSCRIPT:
-${JSON.stringify(transcript, null, 2)}
+${formattedTranscript}
 
 Return ONLY valid JSON in this exact format:
 {
   "argumentQuality": {"score": number, "max": 30, "notes": "string"},
   "relevance": {"score": number, "max": 20, "notes": "string"},
   "fluency": {"score": number, "max": 20, "notes": "string"},
-  "timingAndRules": {"score": number, "max": 15, "notes": "string"},
-  "engagementRebuttal": {"score": number, "max": 15, "notes": "string"},
+  "engagementRebuttal": {"score": number, "max": 30, "notes": "string"},
   "finalScore": number,
   "penalties": [{"type": "string", "amount": number, "details": "string"}],
   "advice": ["string"]
@@ -220,15 +217,13 @@ function generateDefaultScores() {
   return {
     argumentQuality: { score: 20, max: 30, notes: "Good structure with room for improvement" },
     relevance: { score: 15, max: 20, notes: "Stayed mostly on topic" },
-    fluency: { score: 14, max: 20, notes: "Clear delivery with some pauses" },
-    timingAndRules: { score: 12, max: 15, notes: "Good time management" },
-    engagementRebuttal: { score: 10, max: 15, notes: "Addressed opponent's points" },
-    finalScore: 71,
+    fluency: { score: 14, max: 20, notes: "Clear delivery" },
+    engagementRebuttal: { score: 21, max: 30, notes: "Addressed opponent's points" },
+    finalScore: 70,
     penalties: [],
     advice: [
       "Practice structuring arguments with clear claims and evidence",
-      "Work on rebuttal techniques to challenge opponent's logic",
-      "Use specific examples to strengthen your points"
+      "Work on rebuttal techniques to challenge opponent's logic"
     ]
   };
 }
