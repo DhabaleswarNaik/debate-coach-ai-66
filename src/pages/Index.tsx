@@ -6,6 +6,7 @@ import { DebateSetup, DebateConfig } from "@/components/DebateSetup";
 import { SimpleDebate } from "@/components/SimpleDebate";
 import { DebateFeedback } from "@/components/DebateFeedback";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { LayoutDashboard, LogOut } from "lucide-react";
 
 type DebateState = "setup" | "active" | "feedback";
@@ -76,6 +77,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {state === "setup" && (
         <header className="fixed top-0 right-0 z-50 p-4 flex gap-2">
+          <ThemeToggle />
           <Button 
             variant="outline" 
             onClick={() => navigate("/dashboard")}
