@@ -51,57 +51,127 @@ serve(async (req) => {
       `${entry.speaker === "user" ? "User" : "AI"}: ${entry.text}`
     ).join("\n\n");
 
+    // Determine the user's actual debate side (now config.side is AI's side, so user is opposite)
+    const userDebateSide = config.side === "proposition" ? "opposition (AGAINST the motion)" : "proposition (FOR the motion)";
+
     // Use Lovable AI to analyze the debate - ONLY evaluating user's performance
-    const analysisPrompt = `You are an expert debate judge. Analyze ONLY THE USER'S performance in this debate. The AI is just a practice partner - do NOT evaluate the AI's arguments.
+    const analysisPrompt = `You are an expert debate judge and language evaluator. Analyze ONLY THE USER'S performance in this debate. The AI is just a practice partner - do NOT evaluate the AI's arguments.
 
-Debate Config:
-- Topic: ${config.topic}
-- Difficulty: ${config.difficulty}
-- Side: ${config.side}
+DEBATE CONTEXT:
+- Topic: "${config.topic}"
+- Difficulty Level: ${config.difficulty}
+- User's Side: ${userDebateSide}
+- AI's Side: ${config.side === "proposition" ? "proposition (FOR)" : "opposition (AGAINST)"}
 
-Transcript:
+USER'S STATEMENTS TO EVALUATE:
+${userEntries.map((e: any) => `"${e.text}"`).join("\n")}
+
+FULL TRANSCRIPT (for context on rebuttals):
 ${formattedTranscript}
 
-IMPORTANT: Score ONLY based on what the USER said. Evaluate their grammar, vocabulary, argument structure, and debate skills.
+═══════════════════════════════════════════════════════════════
+SCORING RUBRIC (Total = 100 points) - EVALUATE ONLY USER'S SPEECH
+═══════════════════════════════════════════════════════════════
 
-SCORING RUBRIC (Total = 100 points) - Based ONLY on USER's contributions:
+1. ARGUMENT QUALITY — 30 points maximum
+   Evaluate the user's argumentation skills:
+   
+   A) Claim Clarity (0-10 points):
+      - 8-10: Clear, well-defined claims with specific positions
+      - 5-7: Understandable claims but somewhat vague
+      - 2-4: Unclear or poorly stated claims
+      - 0-1: No discernible claims made
+   
+   B) Evidence & Reasoning (0-12 points):
+      - 10-12: Strong logical reasoning with examples/evidence
+      - 6-9: Some reasoning but lacks depth or evidence
+      - 2-5: Weak reasoning, assertions without support
+      - 0-1: No logical support provided
+   
+   C) Persuasiveness (0-8 points):
+      - 7-8: Compelling, convincing delivery
+      - 4-6: Somewhat persuasive
+      - 1-3: Weak persuasion
+      - 0: Not persuasive at all
 
-1. Argument Quality — 30 points
-   - Claim clarity and structure (0–10)
-   - Evidence, reasoning, and logical support (0–12)
-   - Persuasiveness and conclusion strength (0–8)
+2. RELEVANCE TO TOPIC — 20 points maximum
+   
+   A) Topic Adherence (0-15 points):
+      - 13-15: Directly and consistently addresses the debate topic
+      - 8-12: Mostly on-topic with minor tangents
+      - 4-7: Partially relevant, significant off-topic content
+      - 0-3: Mostly off-topic or irrelevant statements
+   
+   B) Side Consistency (0-5 points):
+      - 5: Consistently argues for their assigned side (${userDebateSide})
+      - 3-4: Mostly consistent but some contradiction
+      - 1-2: Unclear which side they support
+      - 0: Argues for the wrong side or no clear position
 
-2. Relevance to Topic — 20 points
-   - How directly user addressed the debate topic (0–15)
-   - Staying consistent with their assigned side (0–5)
+3. FLUENCY & LANGUAGE — 20 points maximum
+   Evaluate grammar, vocabulary, and expression quality:
+   
+   A) Grammar & Syntax (0-10 points):
+      - 9-10: Excellent grammar, proper sentence structure
+      - 6-8: Minor grammatical errors, mostly correct
+      - 3-5: Frequent grammar mistakes affecting clarity
+      - 0-2: Poor grammar making meaning unclear
+   
+   B) Vocabulary Usage (0-5 points):
+      - 5: Rich, varied, and appropriate vocabulary
+      - 3-4: Good vocabulary with some variety
+      - 1-2: Basic or repetitive vocabulary
+      - 0: Inappropriate or confusing word choices
+   
+   C) Coherence & Clarity (0-5 points):
+      - 5: Clear, well-organized, easy to follow
+      - 3-4: Mostly clear with some confusion
+      - 1-2: Difficult to follow
+      - 0: Incoherent or incomprehensible
 
-3. Fluency & Language — 20 points
-   - Grammar and vocabulary usage (0–10)
-   - Sentence clarity and coherence (0–5)
-   - Natural expression and articulation (0–5)
+4. ENGAGEMENT & REBUTTAL — 30 points maximum
+   
+   A) Addressing Opponent's Points (0-15 points):
+      - 13-15: Directly addresses and refutes AI's key arguments
+      - 8-12: Partially addresses AI's points
+      - 4-7: Minimal engagement with opponent's arguments
+      - 0-3: Ignores AI's arguments entirely
+   
+   B) Counter-Argument Quality (0-15 points):
+      - 13-15: Strong, well-reasoned counter-arguments
+      - 8-12: Adequate rebuttals with some gaps
+      - 4-7: Weak or poorly constructed rebuttals
+      - 0-3: No meaningful rebuttals
 
-4. Engagement & Rebuttal — 30 points
-   - How well user addressed AI's counterpoints (0–15)
-   - Quality of user's rebuttals and counter-arguments (0–15)
-
-PENALTIES:
-- Off-topic statements: up to -10 points
-- Personal attacks: -5 per incident
+═══════════════════════════════════════════════════════════════
+PENALTIES (Deduct from final score):
+═══════════════════════════════════════════════════════════════
+- Off-topic statements: -5 to -10 points (based on severity)
+- Personal attacks or inappropriate language: -5 per incident
 - Incoherent or incomplete sentences: -2 per incident
+- Contradicting own position: -3 per incident
+- Completely ignoring the topic: -10 points
 
-BE STRICT: If user gave weak arguments or poor grammar, score low. If user barely engaged, give minimal points.
+═══════════════════════════════════════════════════════════════
+IMPORTANT EVALUATION GUIDELINES:
+═══════════════════════════════════════════════════════════════
+- BE STRICT AND FAIR: Score based on actual performance
+- GRAMMAR MATTERS: Poor grammar should significantly lower the Fluency score
+- RELEVANCE IS KEY: Off-topic rambling should result in low Relevance scores
+- USER SIDE CHECK: User should argue ${userDebateSide}. If they argue for the wrong side, penalize heavily in Relevance.
+- MEANINGFUL ENGAGEMENT: Simply agreeing or making one-word responses = low Engagement score
 
 Return a JSON response in this EXACT format:
 {
   "scores": {
-    "argument_quality": {"score": number, "max": 30, "notes": "string explaining user's argument quality"},
-    "relevance": {"score": number, "max": 20, "notes": "string explaining how relevant user's points were"},
-    "fluency": {"score": number, "max": 20, "notes": "string about user's grammar and language quality"},
-    "engagement_rebuttal": {"score": number, "max": 30, "notes": "string about how user engaged with AI's points"}
+    "argument_quality": {"score": number, "max": 30, "notes": "Detailed explanation of user's argument quality, structure, and reasoning"},
+    "relevance": {"score": number, "max": 20, "notes": "How well user stayed on topic and defended their assigned side"},
+    "fluency": {"score": number, "max": 20, "notes": "Assessment of user's grammar, vocabulary, and language clarity"},
+    "engagement_rebuttal": {"score": number, "max": 30, "notes": "How effectively user addressed and countered AI's arguments"}
   },
   "penalties": [{"type": "string", "amount_points": number, "details": "string"}],
-  "final_score": number,
-  "advice": ["specific actionable tip for user", "another tip"]
+  "final_score": number (sum of scores minus penalties, minimum 0),
+  "advice": ["First specific, actionable improvement tip", "Second specific improvement tip", "Third tip if applicable"]
 }`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
