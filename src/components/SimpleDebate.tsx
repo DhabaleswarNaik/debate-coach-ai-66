@@ -33,7 +33,6 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const isRecordingRef = useRef(false);
   const userStartTimeRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const accumulatedTextRef = useRef("");
 
   // Keep ref in sync with state
@@ -114,66 +113,68 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     }
   }, [transcript, currentUserText]);
 
-  const speakText = useCallback(async (text: string): Promise<void> => {
-    const startTime = Date.now();
-    setIsAISpeaking(true);
+  // Get the best available voice for the language
+  const getBestVoice = useCallback(() => {
+    const voices = speechSynthesis.getVoices();
+    const langCode = config.language === "hi" ? "hi" : "en";
     
-    try {
-      // Try ElevenLabs TTS via edge function
-      const { data, error } = await supabase.functions.invoke("text-to-speech", {
-        body: { text, language: config.language },
-      });
-
-      // If error or data is JSON (error response), fallback to browser TTS
-      if (error || !data || data instanceof ArrayBuffer === false) {
-        console.log("Using browser TTS (ElevenLabs unavailable)");
-        return fallbackSpeak(text, startTime);
-      }
-
-      const audioBlob = new Blob([data], { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      return new Promise((resolve) => {
-        const audio = new Audio(audioUrl);
-        audioRef.current = audio;
-        
-        audio.onended = () => {
-          const duration = (Date.now() - startTime) / 1000;
-          setTimeLog(prev => ({ ...prev, aiTotal: prev.aiTotal + duration }));
-          setIsAISpeaking(false);
-          URL.revokeObjectURL(audioUrl);
-          resolve();
-        };
-        
-        audio.onerror = () => {
-          setIsAISpeaking(false);
-          URL.revokeObjectURL(audioUrl);
-          fallbackSpeak(text, startTime).then(resolve);
-        };
-        
-        audio.play().catch(() => {
-          setIsAISpeaking(false);
-          fallbackSpeak(text, startTime).then(resolve);
-        });
-      });
-    } catch (error) {
-      console.error("TTS failed, using fallback:", error);
-      return fallbackSpeak(text, startTime);
+    // Priority list for English voices (higher quality voices first)
+    const preferredEnglishVoices = [
+      "Google UK English Male",
+      "Google UK English Female", 
+      "Google US English",
+      "Microsoft David",
+      "Microsoft Zira",
+      "Daniel",
+      "Samantha",
+      "Alex",
+    ];
+    
+    // Priority list for Hindi voices
+    const preferredHindiVoices = [
+      "Google हिन्दी",
+      "Microsoft Hemant",
+      "Lekha",
+    ];
+    
+    const preferredVoices = config.language === "hi" ? preferredHindiVoices : preferredEnglishVoices;
+    
+    // Try to find a preferred voice
+    for (const name of preferredVoices) {
+      const voice = voices.find(v => v.name.includes(name));
+      if (voice) return voice;
     }
+    
+    // Fall back to any matching language voice
+    const matchingVoice = voices.find(v => v.lang.startsWith(langCode));
+    if (matchingVoice) return matchingVoice;
+    
+    // Last resort: first available voice
+    return voices[0] || null;
   }, [config.language]);
 
-  const fallbackSpeak = (text: string, startTime: number): Promise<void> => {
+  const speakText = useCallback(async (text: string): Promise<void> => {
+    const startTime = Date.now();
+    
     return new Promise((resolve) => {
+      // Cancel any ongoing speech
+      speechSynthesis.cancel();
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = config.language === "hi" ? "hi-IN" : "en-US";
-      utterance.rate = 0.9;
+      utterance.rate = 0.95; // Slightly slower for clarity
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
       
-      const voices = speechSynthesis.getVoices();
-      const langCode = config.language === "hi" ? "hi" : "en";
-      const matchingVoice = voices.find(v => v.lang.startsWith(langCode));
-      if (matchingVoice) {
-        utterance.voice = matchingVoice;
+      const voice = getBestVoice();
+      if (voice) {
+        utterance.voice = voice;
+        console.log("Using voice:", voice.name);
       }
+      
+      utterance.onstart = () => {
+        setIsAISpeaking(true);
+      };
       
       utterance.onend = () => {
         const duration = (Date.now() - startTime) / 1000;
@@ -182,7 +183,8 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
         resolve();
       };
 
-      utterance.onerror = () => {
+      utterance.onerror = (event) => {
+        console.error("Speech error:", event.error);
         setIsAISpeaking(false);
         resolve();
       };
@@ -190,7 +192,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       setIsAISpeaking(true);
       speechSynthesis.speak(utterance);
     });
-  };
+  }, [config.language, getBestVoice]);
 
   const getAIResponse = async (userText: string) => {
     setIsProcessing(true);
@@ -336,11 +338,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   };
 
   const handleEndDebate = async () => {
-    // Stop any ongoing audio/speech
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
+    // Stop any ongoing speech
     speechSynthesis.cancel();
     if (recognitionRef.current) {
       try {
