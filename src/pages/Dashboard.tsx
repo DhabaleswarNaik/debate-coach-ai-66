@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Trophy, Clock, Calendar, TrendingUp, Target, Award, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Debate {
   id: string;
@@ -108,10 +109,13 @@ export default function Dashboard() {
               <p className="text-sm text-muted-foreground">Track your debate performance</p>
             </div>
           </div>
-          <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary-hover shadow-md">
-            <Sparkles className="w-4 h-4 mr-2" />
-            New Debate
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary-hover shadow-md">
+              <Sparkles className="w-4 h-4 mr-2" />
+              New Debate
+            </Button>
+          </div>
         </div>
       </header>
 
