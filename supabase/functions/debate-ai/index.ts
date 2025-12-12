@@ -133,13 +133,13 @@ function buildSystemPrompt(config: any): string {
     hard: "Use advanced vocabulary and quick rebuttals."
   };
 
-  // User's side determines AI's opposite side
-  const aiSide = config.side === "proposition" ? "OPPOSITION" : "PROPOSITION";
-  const userSide = config.side === "proposition" ? "proposition (FOR)" : "opposition (AGAINST)";
+  // config.side now represents the AI's side directly
+  const aiSide = config.side === "proposition" ? "PROPOSITION" : "OPPOSITION";
+  const userSide = config.side === "proposition" ? "opposition (AGAINST)" : "proposition (FOR)";
   
   const sideInstructions = config.side === "proposition" 
-    ? `You are STRICTLY arguing AGAINST the motion (OPPOSITION side). The user is arguing FOR the motion. You MUST oppose everything they say and provide counter-arguments against the topic.`
-    : `You are STRICTLY arguing FOR the motion (PROPOSITION side). The user is arguing AGAINST the motion. You MUST support and defend the topic with strong arguments.`;
+    ? `You are STRICTLY arguing FOR the motion (PROPOSITION side). The user is arguing AGAINST the motion. You MUST support and defend the topic with strong arguments.`
+    : `You are STRICTLY arguing AGAINST the motion (OPPOSITION side). The user is arguing FOR the motion. You MUST oppose everything they say and provide counter-arguments against the topic.`;
 
   const languageInstruction = config.language === "hi"
     ? "IMPORTANT: You MUST respond in Hindi (हिंदी). Use Devanagari script."
