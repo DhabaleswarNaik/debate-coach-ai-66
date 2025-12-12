@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { MessageSquare, Sparkles } from "lucide-react";
 
@@ -15,17 +14,40 @@ export interface DebateConfig {
   difficulty: "easy" | "medium" | "hard";
   side: "proposition" | "opposition";
   allocatedTime: number;
+  language: "en" | "hi";
 }
 
+const DEBATE_TOPICS = [
+  {
+    id: "ai-future",
+    en: "Artificial Intelligence is the future of humanity",
+    hi: "कृत्रिम बुद्धिमत्ता मानवता का भविष्य है"
+  },
+  {
+    id: "social-media",
+    en: "Social media does more harm than good to society",
+    hi: "सोशल मीडिया समाज को फायदे से ज्यादा नुकसान पहुंचाता है"
+  },
+  {
+    id: "climate-action",
+    en: "Individual actions can significantly impact climate change",
+    hi: "व्यक्तिगत कार्य जलवायु परिवर्तन को महत्वपूर्ण रूप से प्रभावित कर सकते हैं"
+  }
+];
+
 export const DebateSetup = ({ onStart }: DebateSetupProps) => {
-  const [topic, setTopic] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [side, setSide] = useState<"proposition" | "opposition">("proposition");
-  const [allocatedTime, setAllocatedTime] = useState(120);
+  const [allocatedTime, setAllocatedTime] = useState(60);
+  const [language, setLanguage] = useState<"en" | "hi">("en");
 
   const handleStart = () => {
-    if (!topic.trim()) return;
-    onStart({ topic, difficulty, side, allocatedTime });
+    const topicData = DEBATE_TOPICS.find(t => t.id === selectedTopic);
+    if (!topicData) return;
+    
+    const topic = language === "en" ? topicData.en : topicData.hi;
+    onStart({ topic, difficulty, side, allocatedTime, language });
   };
 
   return (
@@ -43,14 +65,32 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="topic">Debate Topic</Label>
-            <Textarea
-              id="topic"
-              placeholder="Enter the debate topic (e.g., 'This house believes that universal basic income should be implemented')"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              className="min-h-[100px] resize-none"
-            />
+            <Label>Language / भाषा</Label>
+            <RadioGroup value={language} onValueChange={(v) => setLanguage(v as "en" | "hi")}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="en" id="lang-en" />
+                <Label htmlFor="lang-en" className="font-normal cursor-pointer">English</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="hi" id="lang-hi" />
+                <Label htmlFor="lang-hi" className="font-normal cursor-pointer">हिंदी (Hindi)</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Select Debate Topic / विषय चुनें</Label>
+            <RadioGroup value={selectedTopic} onValueChange={setSelectedTopic}>
+              {DEBATE_TOPICS.map((topic) => (
+                <div key={topic.id} className="flex items-start space-x-2 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value={topic.id} id={topic.id} className="mt-0.5" />
+                  <Label htmlFor={topic.id} className="font-normal cursor-pointer flex-1">
+                    <div className="font-medium">{topic.en}</div>
+                    <div className="text-sm text-muted-foreground">{topic.hi}</div>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
 
           <div className="space-y-2">
@@ -115,7 +155,7 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
 
           <Button
             onClick={handleStart}
-            disabled={!topic.trim()}
+            disabled={!selectedTopic}
             className="w-full h-12 text-lg"
             size="lg"
           >

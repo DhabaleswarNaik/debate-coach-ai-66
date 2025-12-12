@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { DebateSetup, DebateConfig } from "@/components/DebateSetup";
-import { VoiceDebate } from "@/components/VoiceDebate";
+import { SimpleDebate } from "@/components/SimpleDebate";
 import { DebateFeedback } from "@/components/DebateFeedback";
 import { Button } from "@/components/ui/button";
 import { History } from "lucide-react";
@@ -83,7 +83,7 @@ const Index = () => {
         </Button>
       </div>
       {state === "setup" && <DebateSetup onStart={handleStart} />}
-      {state === "active" && config && <VoiceDebate config={config} onEnd={handleEnd} userId={user?.id} />}
+      {state === "active" && config && <SimpleDebate config={config} onEnd={handleEnd} userId={user?.id} />}
       {state === "feedback" && config && (
         <DebateFeedback 
           config={config}
