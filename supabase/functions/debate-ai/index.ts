@@ -137,6 +137,10 @@ function buildSystemPrompt(config: any): string {
     ? "You are arguing AGAINST the motion (opposition side)."
     : "You are arguing FOR the motion (proposition side).";
 
+  const languageInstruction = config.language === "hi"
+    ? "IMPORTANT: You MUST respond in Hindi (हिंदी). Use Devanagari script."
+    : "Respond in English.";
+
   return `You are an AI Debate Partner acting as a ${config.difficulty} difficulty opponent.
 
 TOPIC: "${config.topic}"
@@ -144,8 +148,11 @@ TOPIC: "${config.topic}"
 YOUR ROLE: ${sideInstructions}
 DIFFICULTY: ${difficultyInstructions[config.difficulty as keyof typeof difficultyInstructions]}
 
+LANGUAGE: ${languageInstruction}
+
 RULES:
 - Each speaker has ${config.allocatedTime} seconds per turn
+- Keep responses concise (2-3 paragraphs max) so they can be spoken aloud
 - Build arguments with: Claim → Reasoning/Evidence → Example → Conclusion
 - On rebuttals, reference opponent's claims explicitly
 - Stay on topic and maintain your side consistently
