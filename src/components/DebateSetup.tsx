@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { MessageSquare, Sparkles } from "lucide-react";
+import { MessageSquare, Sparkles, Zap, Shield, Target } from "lucide-react";
 
 interface DebateSetupProps {
   onStart: (config: DebateConfig) => void;
@@ -35,6 +35,12 @@ const DEBATE_TOPICS = [
   }
 ];
 
+const DIFFICULTY_CONFIG = [
+  { value: "easy", label: "Easy", icon: Zap, description: "Simpler arguments, forgiving feedback", color: "text-accent" },
+  { value: "medium", label: "Medium", icon: Target, description: "Balanced challenge, moderate complexity", color: "text-primary" },
+  { value: "hard", label: "Hard", icon: Shield, description: "Advanced arguments, strict evaluation", color: "text-secondary" },
+];
+
 export const DebateSetup = ({ onStart }: DebateSetupProps) => {
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
@@ -51,95 +57,136 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted">
-      <Card className="w-full max-w-2xl p-8 space-y-6 shadow-lg">
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <MessageSquare className="w-8 h-8 text-primary" />
-            <h1 className="text-3xl font-bold">AI Debate Partner</h1>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/30">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+      </div>
+
+      <Card className="w-full max-w-2xl p-8 space-y-8 glass-card shadow-lg relative animate-fade-up">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/25">
+            <MessageSquare className="w-8 h-8 text-primary-foreground" />
           </div>
-          <p className="text-muted-foreground">
-            Practice your debating skills with an AI opponent
-          </p>
+          <div>
+            <h1 className="text-3xl font-display font-bold gradient-text">AI Debate Partner</h1>
+            <p className="text-muted-foreground mt-2">
+              Sharpen your argumentation skills with intelligent AI opposition
+            </p>
+          </div>
         </div>
 
         <div className="space-y-6">
-          <div className="space-y-2">
-            <Label>Language / भाषा</Label>
-            <RadioGroup value={language} onValueChange={(v) => setLanguage(v as "en" | "hi")}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="en" id="lang-en" />
-                <Label htmlFor="lang-en" className="font-normal cursor-pointer">English</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="hi" id="lang-hi" />
-                <Label htmlFor="lang-hi" className="font-normal cursor-pointer">हिंदी (Hindi)</Label>
-              </div>
-            </RadioGroup>
+          {/* Language Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Language / भाषा</Label>
+            <div className="flex gap-3">
+              {[
+                { value: "en", label: "English", flag: "🇬🇧" },
+                { value: "hi", label: "हिंदी", flag: "🇮🇳" }
+              ].map((lang) => (
+                <button
+                  key={lang.value}
+                  onClick={() => setLanguage(lang.value as "en" | "hi")}
+                  className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 ${
+                    language === lang.value
+                      ? 'border-primary bg-primary/5 shadow-md'
+                      : 'border-border hover:border-primary/50 bg-card'
+                  }`}
+                >
+                  <span className="text-2xl mb-2 block">{lang.flag}</span>
+                  <span className="font-medium">{lang.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Select Debate Topic / विषय चुनें</Label>
-            <RadioGroup value={selectedTopic} onValueChange={setSelectedTopic}>
+          {/* Topic Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Select Topic</Label>
+            <RadioGroup value={selectedTopic} onValueChange={setSelectedTopic} className="space-y-3">
               {DEBATE_TOPICS.map((topic) => (
-                <div key={topic.id} className="flex items-start space-x-2 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-                  <RadioGroupItem value={topic.id} id={topic.id} className="mt-0.5" />
-                  <Label htmlFor={topic.id} className="font-normal cursor-pointer flex-1">
-                    <div className="font-medium">{topic.en}</div>
-                    <div className="text-sm text-muted-foreground">{topic.hi}</div>
-                  </Label>
-                </div>
+                <label
+                  key={topic.id}
+                  className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                    selectedTopic === topic.id
+                      ? 'border-primary bg-primary/5 shadow-md'
+                      : 'border-border hover:border-primary/50 bg-card'
+                  }`}
+                >
+                  <RadioGroupItem value={topic.id} id={topic.id} className="mt-1" />
+                  <div className="flex-1">
+                    <div className="font-semibold">{topic.en}</div>
+                    <div className="text-sm text-muted-foreground mt-1">{topic.hi}</div>
+                  </div>
+                </label>
               ))}
             </RadioGroup>
           </div>
 
-          <div className="space-y-2">
-            <Label>Difficulty Level</Label>
-            <RadioGroup value={difficulty} onValueChange={(v) => setDifficulty(v as any)}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="easy" id="easy" />
-                <Label htmlFor="easy" className="font-normal cursor-pointer">
-                  Easy - Simpler arguments, forgiving feedback
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="medium" id="medium" />
-                <Label htmlFor="medium" className="font-normal cursor-pointer">
-                  Medium - Balanced challenge, moderate complexity
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="hard" id="hard" />
-                <Label htmlFor="hard" className="font-normal cursor-pointer">
-                  Hard - Advanced arguments, strict evaluation
-                </Label>
-              </div>
-            </RadioGroup>
+          {/* Difficulty Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Difficulty Level</Label>
+            <div className="grid grid-cols-3 gap-3">
+              {DIFFICULTY_CONFIG.map((diff) => {
+                const Icon = diff.icon;
+                return (
+                  <button
+                    key={diff.value}
+                    onClick={() => setDifficulty(diff.value as any)}
+                    className={`p-4 rounded-xl border-2 transition-all duration-300 text-center ${
+                      difficulty === diff.value
+                        ? 'border-primary bg-primary/5 shadow-md'
+                        : 'border-border hover:border-primary/50 bg-card'
+                    }`}
+                  >
+                    <Icon className={`w-6 h-6 mx-auto mb-2 ${diff.color}`} />
+                    <div className="font-semibold text-sm">{diff.label}</div>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              {DIFFICULTY_CONFIG.find(d => d.value === difficulty)?.description}
+            </p>
           </div>
 
-          <div className="space-y-2">
-            <Label>AI Side (You will argue the opposite)</Label>
-            <RadioGroup value={side} onValueChange={(v) => setSide(v as any)}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="proposition" id="proposition" />
-                <Label htmlFor="proposition" className="font-normal cursor-pointer">
-                  Proposition - AI argues for the motion (You argue against)
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="opposition" id="opposition" />
-                <Label htmlFor="opposition" className="font-normal cursor-pointer">
-                  Opposition - AI argues against the motion (You argue for)
-                </Label>
-              </div>
-            </RadioGroup>
+          {/* Side Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Your Position</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setSide("proposition")}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  side === "proposition"
+                    ? 'border-accent bg-accent/5 shadow-md'
+                    : 'border-border hover:border-accent/50 bg-card'
+                }`}
+              >
+                <div className="font-semibold text-accent mb-1">Argue Against</div>
+                <div className="text-xs text-muted-foreground">AI argues FOR the motion</div>
+              </button>
+              <button
+                onClick={() => setSide("opposition")}
+                className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                  side === "opposition"
+                    ? 'border-secondary bg-secondary/5 shadow-md'
+                    : 'border-border hover:border-secondary/50 bg-card'
+                }`}
+              >
+                <div className="font-semibold text-secondary mb-1">Argue For</div>
+                <div className="text-xs text-muted-foreground">AI argues AGAINST the motion</div>
+              </button>
+            </div>
           </div>
 
-
+          {/* Start Button */}
           <Button
             onClick={handleStart}
             disabled={!selectedTopic}
-            className="w-full h-12 text-lg"
+            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary-hover hover:to-primary shadow-lg shadow-primary/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
             <Sparkles className="w-5 h-5 mr-2" />
