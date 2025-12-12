@@ -1,61 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
 :root {
-    /* Debate-themed professional colors */
-    --background: 220 25% 97%;
-    --foreground: 220 20% 15%;
+    /* Modern gradient-rich color palette */
+    --background: 225 25% 97%;
+    --foreground: 225 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 15%;
+    --card-foreground: 225 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 15%;
+    --popover-foreground: 225 30% 12%;
 
-    /* Deep navy for professional look */
-    --primary: 220 70% 35%;
-    --primary-foreground: 0 0% 98%;
-    --primary-hover: 220 70% 30%;
+    /* Vibrant indigo primary */
+    --primary: 245 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 245 85% 48%;
 
-    /* Teal accent for engagement */
-    --secondary: 180 65% 45%;
+    /* Warm coral accent */
+    --secondary: 15 90% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 94%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 225 20% 93%;
+    --muted-foreground: 225 15% 50%;
 
-    /* Teal accent variations */
-    --accent: 180 65% 45%;
+    /* Emerald accent for success/scores */
+    --accent: 160 80% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 180 65% 45%;
+    --border: 225 15% 88%;
+    --input: 225 15% 88%;
+    --ring: 245 85% 55%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Timer and status colors */
-    --success: 145 65% 45%;
+    /* Status colors */
+    --success: 160 80% 45%;
     --warning: 40 95% 55%;
-    --info: 200 85% 55%;
+    --info: 210 95% 55%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 70% 35%), hsl(220 70% 45%));
-    --gradient-accent: linear-gradient(135deg, hsl(180 65% 45%), hsl(180 65% 55%));
+    /* Premium gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(245 85% 55%), hsl(280 75% 55%));
+    --gradient-accent: linear-gradient(135deg, hsl(160 80% 45%), hsl(180 75% 50%));
+    --gradient-warm: linear-gradient(135deg, hsl(15 90% 60%), hsl(35 95% 55%));
+    --gradient-hero: linear-gradient(135deg, hsl(245 85% 55%) 0%, hsl(280 75% 55%) 50%, hsl(320 80% 55%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
 
-    /* Shadows */
-    --shadow-sm: 0 2px 8px hsl(220 20% 15% / 0.08);
-    --shadow-md: 0 4px 16px hsl(220 20% 15% / 0.12);
-    --shadow-lg: 0 8px 32px hsl(220 20% 15% / 0.16);
+    /* Enhanced shadows */
+    --shadow-sm: 0 2px 8px hsl(245 85% 55% / 0.06);
+    --shadow-md: 0 8px 24px hsl(245 85% 55% / 0.1);
+    --shadow-lg: 0 16px 48px hsl(245 85% 55% / 0.15);
+    --shadow-glow: 0 0 40px hsl(245 85% 55% / 0.25);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -68,45 +70,49 @@ All colors MUST be HSL.
   }
 
 .dark {
-    --background: 220 25% 12%;
-    --foreground: 220 10% 92%;
+    --background: 225 30% 8%;
+    --foreground: 225 10% 95%;
 
-    --card: 220 25% 16%;
-    --card-foreground: 220 10% 92%;
+    --card: 225 30% 12%;
+    --card-foreground: 225 10% 95%;
 
-    --popover: 220 25% 16%;
-    --popover-foreground: 220 10% 92%;
+    --popover: 225 30% 12%;
+    --popover-foreground: 225 10% 95%;
 
-    --primary: 220 70% 45%;
-    --primary-foreground: 0 0% 98%;
-    --primary-hover: 220 70% 50%;
+    --primary: 245 85% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 245 85% 70%;
 
-    --secondary: 180 65% 50%;
+    --secondary: 15 90% 65%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 20%;
-    --muted-foreground: 220 10% 65%;
+    --muted: 225 25% 18%;
+    --muted-foreground: 225 10% 60%;
 
-    --accent: 180 65% 50%;
+    --accent: 160 80% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 20% 25%;
-    --input: 220 20% 25%;
-    --ring: 180 65% 50%;
+    --border: 225 25% 22%;
+    --input: 225 25% 22%;
+    --ring: 245 85% 65%;
 
-    --success: 145 65% 50%;
+    --success: 160 80% 50%;
     --warning: 40 95% 60%;
-    --info: 200 85% 60%;
+    --info: 210 95% 60%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(220 70% 35%), hsl(220 70% 50%));
-    --gradient-accent: linear-gradient(135deg, hsl(180 65% 45%), hsl(180 65% 60%));
+    --gradient-primary: linear-gradient(135deg, hsl(245 85% 55%), hsl(280 75% 60%));
+    --gradient-accent: linear-gradient(135deg, hsl(160 80% 50%), hsl(180 75% 55%));
+    --gradient-warm: linear-gradient(135deg, hsl(15 90% 60%), hsl(35 95% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(245 85% 55%) 0%, hsl(280 75% 60%) 50%, hsl(320 80% 60%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(30,30,40,0.9), rgba(30,30,40,0.7));
 
     --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 16px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 8px 32px hsl(0 0% 0% / 0.5);
+    --shadow-md: 0 8px 24px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 16px 48px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px hsl(245 85% 55% / 0.3);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -126,5 +132,77 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+  }
+
+  .gradient-text {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+  }
+
+  .score-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
+  }
+
+  .metric-card {
+    @apply p-5 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 shadow-sm;
+  }
+}
+
+@layer utilities {
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.5s ease-out forwards;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out forwards;
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }

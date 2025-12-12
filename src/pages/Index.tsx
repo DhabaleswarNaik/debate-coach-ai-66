@@ -6,7 +6,7 @@ import { DebateSetup, DebateConfig } from "@/components/DebateSetup";
 import { SimpleDebate } from "@/components/SimpleDebate";
 import { DebateFeedback } from "@/components/DebateFeedback";
 import { Button } from "@/components/ui/button";
-import { History } from "lucide-react";
+import { LayoutDashboard, LogOut } from "lucide-react";
 
 type DebateState = "setup" | "active" | "feedback";
 
@@ -64,24 +64,36 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p>Loading...</p>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted-foreground font-medium">Loading...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="absolute top-4 right-4 flex gap-2">
-        {state === "setup" && (
-          <Button variant="outline" onClick={() => navigate("/dashboard")}>
-            <History className="w-4 h-4 mr-2" />
-            History
+      {state === "setup" && (
+        <header className="fixed top-0 right-0 z-50 p-4 flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate("/dashboard")}
+            className="glass-card shadow-sm hover:shadow-md transition-all"
+          >
+            <LayoutDashboard className="w-4 h-4 mr-2" />
+            Dashboard
           </Button>
-        )}
-        <Button variant="outline" onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
+          <Button 
+            variant="ghost" 
+            onClick={handleLogout}
+            className="hover:bg-destructive/10 hover:text-destructive"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </header>
+      )}
       {state === "setup" && <DebateSetup onStart={handleStart} />}
       {state === "active" && config && <SimpleDebate config={config} onEnd={handleEnd} userId={user?.id} />}
       {state === "feedback" && config && (
