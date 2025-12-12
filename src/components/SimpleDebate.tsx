@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mic, MicOff, StopCircle, Volume2, Loader2 } from "lucide-react";
 import { DebateConfig } from "./DebateSetup";
-import { DebateTimer } from "./DebateTimer";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -344,18 +343,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <DebateTimer 
-              label="Your Time" 
-              time={timeLog.userTotal}
-              limit={config.allocatedTime}
-              isActive={isRecording}
-            />
-            <DebateTimer 
-              label="AI Time" 
-              time={timeLog.aiTotal}
-              limit={config.allocatedTime}
-              isActive={isAISpeaking}
-            />
+            <div className="p-3 bg-muted/50 rounded-lg text-center">
+              <p className="text-sm text-muted-foreground">Your Speaking Time</p>
+              <p className="text-xl font-mono">{Math.floor(timeLog.userTotal)}s</p>
+            </div>
+            <div className="p-3 bg-muted/50 rounded-lg text-center">
+              <p className="text-sm text-muted-foreground">AI Speaking Time</p>
+              <p className="text-xl font-mono">{Math.floor(timeLog.aiTotal)}s</p>
+            </div>
           </div>
 
           {!debateStarted ? (
@@ -432,28 +427,18 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
             {config.language === "hi" ? "बातचीत का रिकॉर्ड" : "Conversation Transcript"}
           </h3>
           <ScrollArea className="h-[300px]" ref={scrollRef as any}>
-            {transcript.length === 0 ? (
+        {transcript.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
                 {config.language === "hi" ? "अभी तक कोई बातचीत नहीं" : "No conversation yet"}
               </p>
             ) : (
-              <div className="space-y-4 pr-4">
+              <div className="space-y-3 pr-4 font-mono text-sm">
                 {transcript.map((entry, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 rounded-lg ${
-                      entry.speaker === "user"
-                        ? "bg-primary/10 ml-8"
-                        : "bg-muted mr-8"
-                    }`}
-                  >
-                    <p className="text-xs font-medium mb-1 text-muted-foreground">
-                      {entry.speaker === "user" 
-                        ? (config.language === "hi" ? "आप" : "You")
-                        : (config.language === "hi" ? "AI विरोधी" : "AI Opponent")
-                      }
-                    </p>
-                    <p className="text-sm">{entry.text}</p>
+                  <div key={index} className="flex gap-2">
+                    <span className="font-bold text-primary shrink-0">
+                      {entry.speaker === "user" ? "User:" : "AI:"}
+                    </span>
+                    <span className="text-foreground">{entry.text}</span>
                   </div>
                 ))}
               </div>
