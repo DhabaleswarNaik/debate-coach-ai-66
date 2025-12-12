@@ -28,12 +28,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentUserText, setCurrentUserText] = useState("");
   const [debateStarted, setDebateStarted] = useState(false);
+  const [liveRecordingTime, setLiveRecordingTime] = useState(0);
   
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef(false);
   const userStartTimeRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const accumulatedTextRef = useRef("");
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -292,7 +294,16 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     // Reset accumulated text
     accumulatedTextRef.current = "";
     setCurrentUserText("");
+    setLiveRecordingTime(0);
     userStartTimeRef.current = Date.now();
+    
+    // Start live timer
+    timerIntervalRef.current = setInterval(() => {
+      if (userStartTimeRef.current) {
+        const elapsed = Math.floor((Date.now() - userStartTimeRef.current) / 1000);
+        setLiveRecordingTime(elapsed);
+      }
+    }, 1000);
     
     try {
       recognitionRef.current.start();
@@ -301,11 +312,20 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     } catch (error) {
       console.error("Error starting recognition:", error);
       toast.error("Failed to start recording");
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
     }
   };
 
   const stopRecording = async () => {
     if (!recognitionRef.current) return;
+
+    // Stop live timer
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
 
     // Stop recognition first
     setIsRecording(false);
@@ -323,6 +343,8 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       setTimeLog(prev => ({ ...prev, userTotal: prev.userTotal + duration }));
       userStartTimeRef.current = null;
     }
+    
+    setLiveRecordingTime(0);
 
     // Get the accumulated text
     const userText = accumulatedTextRef.current.trim() || currentUserText.trim();
@@ -407,9 +429,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className="p-3 bg-muted/50 rounded-lg text-center">
+            <div className={`p-3 rounded-lg text-center ${isRecording ? 'bg-red-100 dark:bg-red-900/30 border-2 border-red-500' : 'bg-muted/50'}`}>
               <p className="text-sm text-muted-foreground">Your Speaking Time</p>
-              <p className="text-xl font-mono">{Math.floor(timeLog.userTotal)}s</p>
+              <p className="text-xl font-mono">
+                {isRecording 
+                  ? `${Math.floor(timeLog.userTotal) + liveRecordingTime}s (recording: ${liveRecordingTime}s)`
+                  : `${Math.floor(timeLog.userTotal)}s`
+                }
+              </p>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg text-center">
               <p className="text-sm text-muted-foreground">AI Speaking Time</p>
