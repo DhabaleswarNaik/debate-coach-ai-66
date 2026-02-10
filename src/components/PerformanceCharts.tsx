@@ -53,46 +53,44 @@ export const PerformanceCharts = ({ debates }: PerformanceChartsProps) => {
 
   // Prepare data for latest performance radar chart
   const latestDebate = debatesWithScores[0];
+  const latestScores = latestDebate.scores?.scores || latestDebate.scores;
   const radarData = [
     {
       metric: "Argument",
-      score: latestDebate.scores.argument_quality?.score || 0,
+      score: latestScores?.argument_quality?.score || 0,
       fullMark: 30,
     },
     {
       metric: "Relevance",
-      score: latestDebate.scores.relevance?.score || 0,
+      score: latestScores?.relevance?.score || 0,
       fullMark: 20,
     },
     {
       metric: "Fluency",
-      score: latestDebate.scores.fluency?.score || 0,
+      score: latestScores?.fluency?.score || 0,
       fullMark: 20,
     },
     {
-      metric: "Timing",
-      score: latestDebate.scores.timing_and_rules?.score || 0,
-      fullMark: 15,
-    },
-    {
       metric: "Engagement",
-      score: latestDebate.scores.engagement_rebuttal?.score || 0,
-      fullMark: 15,
+      score: latestScores?.engagement_rebuttal?.score || 0,
+      fullMark: 30,
     },
   ];
 
   // Prepare data for metrics comparison across debates
   const metricsComparisonData = [...debatesWithScores]
     .reverse()
-    .slice(-5) // Last 5 debates
-    .map((debate, index) => ({
-      debate: `#${index + 1}`,
-      Argument: debate.scores.argument_quality?.score || 0,
-      Relevance: debate.scores.relevance?.score || 0,
-      Fluency: debate.scores.fluency?.score || 0,
-      Timing: debate.scores.timing_and_rules?.score || 0,
-      Engagement: debate.scores.engagement_rebuttal?.score || 0,
-    }));
+    .slice(-5)
+    .map((debate, index) => {
+      const s = debate.scores?.scores || debate.scores;
+      return {
+        debate: `#${index + 1}`,
+        Argument: s?.argument_quality?.score || 0,
+        Relevance: s?.relevance?.score || 0,
+        Fluency: s?.fluency?.score || 0,
+        Engagement: s?.engagement_rebuttal?.score || 0,
+      };
+    });
 
   // Calculate average scores
   const averageScore =
@@ -156,7 +154,7 @@ export const PerformanceCharts = ({ debates }: PerformanceChartsProps) => {
             <RadarChart data={radarData}>
               <PolarGrid className="stroke-muted" />
               <PolarAngleAxis dataKey="metric" className="text-xs" />
-              <PolarRadiusAxis angle={90} domain={[0, 30]} className="text-xs" />
+              <PolarRadiusAxis angle={90} domain={[0, 'auto']} className="text-xs" />
               <Radar
                 name="Score"
                 dataKey="score"
@@ -196,7 +194,6 @@ export const PerformanceCharts = ({ debates }: PerformanceChartsProps) => {
               <Bar dataKey="Argument" fill="hsl(var(--primary))" />
               <Bar dataKey="Relevance" fill="hsl(var(--accent))" />
               <Bar dataKey="Fluency" fill="hsl(var(--secondary))" />
-              <Bar dataKey="Timing" fill="hsl(var(--muted-foreground))" />
               <Bar dataKey="Engagement" fill="hsl(var(--foreground))" opacity={0.6} />
             </BarChart>
           </ResponsiveContainer>
