@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Sparkles, Zap, Shield, Target } from "lucide-react";
 
 interface DebateSetupProps {
@@ -18,21 +18,16 @@ export interface DebateConfig {
 }
 
 const DEBATE_TOPICS = [
-  {
-    id: "ai-future",
-    en: "Artificial Intelligence is the future of humanity",
-    hi: "कृत्रिम बुद्धिमत्ता मानवता का भविष्य है"
-  },
-  {
-    id: "social-media",
-    en: "Social media does more harm than good to society",
-    hi: "सोशल मीडिया समाज को फायदे से ज्यादा नुकसान पहुंचाता है"
-  },
-  {
-    id: "climate-action",
-    en: "Individual actions can significantly impact climate change",
-    hi: "व्यक्तिगत कार्य जलवायु परिवर्तन को महत्वपूर्ण रूप से प्रभावित कर सकते हैं"
-  }
+  { id: "ai-future", en: "Artificial Intelligence is the future of humanity", hi: "कृत्रिम बुद्धिमत्ता मानवता का भविष्य है" },
+  { id: "social-media", en: "Social media does more harm than good to society", hi: "सोशल मीडिया समाज को फायदे से ज्यादा नुकसान पहुंचाता है" },
+  { id: "climate-action", en: "Individual actions can significantly impact climate change", hi: "व्यक्तिगत कार्य जलवायु परिवर्तन को महत्वपूर्ण रूप से प्रभावित कर सकते हैं" },
+  { id: "tech-social", en: "Technology makes people less social", hi: "प्रौद्योगिकी लोगों को कम सामाजिक बनाती है" },
+  { id: "online-education", en: "Online education is better than classroom learning", hi: "ऑनलाइन शिक्षा कक्षा शिक्षा से बेहतर है" },
+  { id: "ai-jobs", en: "Artificial intelligence is a threat to jobs", hi: "कृत्रिम बुद्धिमत्ता नौकरियों के लिए खतरा है" },
+  { id: "capital-punishment", en: "Capital punishment should be abolished", hi: "मृत्युदंड समाप्त किया जाना चाहिए" },
+  { id: "wfh", en: "Work from home improves productivity", hi: "घर से काम करने से उत्पादकता बढ़ती है" },
+  { id: "exams", en: "Exams are the best way to assess students", hi: "परीक्षा छात्रों का मूल्यांकन करने का सबसे अच्छा तरीका है" },
+  { id: "growth-vs-env", en: "Economic growth matters more than the environment", hi: "आर्थिक विकास पर्यावरण से अधिक महत्वपूर्ण है" },
 ];
 
 const DIFFICULTY_CONFIG = [
@@ -106,24 +101,21 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
           {/* Topic Selection */}
           <div className="space-y-3">
             <Label className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Select Topic</Label>
-            <RadioGroup value={selectedTopic} onValueChange={setSelectedTopic} className="space-y-3">
-              {DEBATE_TOPICS.map((topic) => (
-                <label
-                  key={topic.id}
-                  className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
-                    selectedTopic === topic.id
-                      ? 'border-primary bg-primary/5 shadow-md'
-                      : 'border-border hover:border-primary/50 bg-card'
-                  }`}
-                >
-                  <RadioGroupItem value={topic.id} id={topic.id} className="mt-1" />
-                  <div className="flex-1">
-                    <div className="font-semibold">{topic.en}</div>
-                    <div className="text-sm text-muted-foreground mt-1">{topic.hi}</div>
-                  </div>
-                </label>
-              ))}
-            </RadioGroup>
+            <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+              <SelectTrigger className="w-full h-12 text-sm bg-card border-2 border-border hover:border-primary/50 transition-all duration-300">
+                <SelectValue placeholder="Choose a debate topic..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border border-border shadow-lg">
+                {DEBATE_TOPICS.map((topic) => (
+                  <SelectItem key={topic.id} value={topic.id} className="py-3 cursor-pointer">
+                    <div>
+                      <div className="font-medium">{topic.en}</div>
+                      <div className="text-xs text-muted-foreground">{topic.hi}</div>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Difficulty Selection */}
