@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, StopCircle, Volume2, Loader2 } from "lucide-react";
+import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb } from "lucide-react";
 import { DebateConfig } from "./DebateSetup";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +29,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [currentUserText, setCurrentUserText] = useState("");
   const [debateStarted, setDebateStarted] = useState(false);
   const [liveRecordingTime, setLiveRecordingTime] = useState(0);
+  const [currentHint, setCurrentHint] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef(false);
@@ -234,6 +235,30 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
 
       setIsProcessing(false);
       await speakText(aiText);
+
+      // Fetch coaching hint if practice mode is enabled
+      if (config.practiceMode) {
+        try {
+          const { data: hintData } = await supabase.functions.invoke('debate-ai', {
+            body: {
+              action: "hint",
+              config: {
+                topic: config.topic,
+                difficulty: config.difficulty,
+                side: config.side,
+                language: config.language
+              },
+              transcript: [...transcript, userEntry, { speaker: "ai", text: aiText, timestamp: Date.now() }],
+              userMessage: userText
+            }
+          });
+          if (hintData?.hint) {
+            setCurrentHint(hintData.hint);
+          }
+        } catch (e) {
+          console.error("Error fetching hint:", e);
+        }
+      }
       
     } catch (error) {
       console.error("Error getting AI response:", error);
@@ -291,9 +316,10 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       return;
     }
 
-    // Reset accumulated text
+    // Reset accumulated text and hint
     accumulatedTextRef.current = "";
     setCurrentUserText("");
+    setCurrentHint(null);
     setLiveRecordingTime(0);
     userStartTimeRef.current = Date.now();
     
@@ -513,6 +539,21 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
             </div>
           )}
         </Card>
+
+        {/* Practice Mode Hint */}
+        {currentHint && (
+          <Card className="p-4 border-2 border-accent/30 bg-accent/5">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
+                <Lightbulb className="w-4 h-4 text-accent" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">Coaching Hint</p>
+                <p className="text-sm text-foreground">{currentHint}</p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Transcript */}
         <Card className="p-4">

@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageSquare, Sparkles, Zap, Shield, Target } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { MessageSquare, Sparkles, Zap, Shield, Target, GraduationCap } from "lucide-react";
 
 interface DebateSetupProps {
   onStart: (config: DebateConfig) => void;
@@ -15,6 +16,7 @@ export interface DebateConfig {
   side: "proposition" | "opposition";
   allocatedTime: number;
   language: "en" | "hi";
+  practiceMode: boolean;
 }
 
 const DEBATE_TOPICS = [
@@ -42,13 +44,14 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
   const [side, setSide] = useState<"proposition" | "opposition">("proposition");
   const [allocatedTime, setAllocatedTime] = useState(60);
   const [language, setLanguage] = useState<"en" | "hi">("en");
+  const [practiceMode, setPracticeMode] = useState(false);
 
   const handleStart = () => {
     const topicData = DEBATE_TOPICS.find(t => t.id === selectedTopic);
     if (!topicData) return;
     
     const topic = language === "en" ? topicData.en : topicData.hi;
-    onStart({ topic, difficulty, side, allocatedTime, language });
+    onStart({ topic, difficulty, side, allocatedTime, language, practiceMode });
   };
 
   return (
@@ -172,6 +175,24 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
                 <div className="text-xs text-muted-foreground">AI argues AGAINST the motion</div>
               </button>
             </div>
+          </div>
+
+          {/* Practice Mode Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-xl border-2 border-border bg-card">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                <GraduationCap className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <Label htmlFor="practice-mode" className="font-semibold cursor-pointer">Practice Mode</Label>
+                <p className="text-xs text-muted-foreground">Get real-time coaching hints during the debate</p>
+              </div>
+            </div>
+            <Switch
+              id="practice-mode"
+              checked={practiceMode}
+              onCheckedChange={setPracticeMode}
+            />
           </div>
 
           {/* Start Button */}
