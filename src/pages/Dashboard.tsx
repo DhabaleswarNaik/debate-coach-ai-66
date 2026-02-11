@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Trophy, Clock, Calendar, TrendingUp, Target, Award, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
+import { SkillBadges } from "@/components/SkillBadges";
+import { ExportPortfolio } from "@/components/ExportPortfolio";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Debate {
@@ -17,11 +19,13 @@ interface Debate {
   allocated_time: number;
   created_at: string;
   scores: any;
+  transcript?: any;
 }
 
 export default function Dashboard() {
   const [debates, setDebates] = useState<Debate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | undefined>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +40,8 @@ export default function Dashboard() {
         navigate("/auth");
         return;
       }
+
+      setUserEmail(user.email);
 
       const { data, error } = await supabase
         .from("debates")
@@ -111,6 +117,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            <ExportPortfolio debates={debates} userName={userEmail} />
             <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary-hover shadow-md">
               <Sparkles className="w-4 h-4 mr-2" />
               New Debate
@@ -179,8 +186,13 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Charts */}
+            {/* Skill Badges */}
             <div className="animate-fade-up" style={{ animationDelay: '0.1s' }}>
+              <SkillBadges debates={debates} />
+            </div>
+
+            {/* Charts */}
+            <div className="animate-fade-up" style={{ animationDelay: '0.2s' }}>
               <PerformanceCharts debates={debates} />
             </div>
             
