@@ -71,6 +71,58 @@ serve(async (req) => {
       return new Response(JSON.stringify({ response: aiResponse }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    } else if (action === "hint") {
+      // Generate coaching hint for practice mode
+      const hintSystemPrompt = `You are a supportive debate coach helping a student improve their argumentation skills.
+
+TOPIC: "${config.topic}"
+
+Analyze the student's last argument and the conversation so far. Provide ONE short coaching tip (1 sentence max) to help them improve their next response. Focus on:
+- Whether they addressed the opponent's last point
+- Whether their claim needs evidence
+- Rebuttal technique improvements
+- Argument structure suggestions
+
+Be encouraging but specific. Examples:
+- "Try countering the opponent's point about X before making your own argument."
+- "Your claim needs supporting evidence — try citing a specific example."
+- "Good rebuttal! Now strengthen it by explaining why their reasoning is flawed."
+
+Return ONLY the coaching tip text, nothing else.`;
+
+      const hintMessages = [
+        { role: "system", content: hintSystemPrompt },
+        ...transcript.map((entry: any) => ({
+          role: entry.speaker === "user" ? "user" : "assistant",
+          content: entry.text
+        })),
+      ];
+
+      if (userMessage) {
+        hintMessages.push({ role: "user", content: `[Student's last argument]: ${userMessage}` });
+      }
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: hintMessages,
+          temperature: 0.5,
+        }),
+      });
+
+      if (!response.ok) throw new Error("AI gateway error during hint generation");
+
+      const data = await response.json();
+      const hint = data.choices[0].message.content;
+
+      return new Response(JSON.stringify({ hint }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     } else if (action === "evaluate") {
       // Evaluate debate performance
       const evaluationPrompt = buildEvaluationPrompt(config, transcript);
