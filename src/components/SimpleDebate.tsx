@@ -234,12 +234,10 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       }]);
 
       setIsProcessing(false);
-      await speakText(aiText);
 
-      // Fetch coaching hint if practice mode is enabled
-      if (config.practiceMode) {
-        try {
-          const { data: hintData } = await supabase.functions.invoke('debate-ai', {
+      // Fetch hint in parallel with TTS so it's ready instantly when AI stops speaking
+      const hintPromise = config.practiceMode
+        ? supabase.functions.invoke('debate-ai', {
             body: {
               action: "hint",
               config: {
@@ -251,14 +249,12 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
               transcript: [...transcript, userEntry, { speaker: "ai", text: aiText, timestamp: Date.now() }],
               userMessage: userText
             }
-          });
-          if (hintData?.hint) {
-            setCurrentHint(hintData.hint);
-          }
-        } catch (e) {
-          console.error("Error fetching hint:", e);
-        }
-      }
+          }).then(({ data: hintData }) => {
+            if (hintData?.hint) setCurrentHint(hintData.hint);
+          }).catch(e => console.error("Error fetching hint:", e))
+        : Promise.resolve();
+
+      await Promise.all([speakText(aiText), hintPromise]);
       
     } catch (error) {
       console.error("Error getting AI response:", error);
