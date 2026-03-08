@@ -74,15 +74,21 @@ export default function Dashboard() {
         .eq("id", user.id)
         .single();
 
-      if (profile?.first_name) {
-        const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
-        setUserName(fullName);
-        const initials = [profile.first_name, profile.last_name]
-          .filter(Boolean)
-          .map(n => n[0])
-          .join("")
-          .toUpperCase();
-        setUserInitials(initials || "U");
+      if (profile) {
+        setAvatarUrl(profile.avatar_url || null);
+        if (profile.first_name) {
+          const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
+          setUserName(fullName);
+          const initials = [profile.first_name, profile.last_name]
+            .filter(Boolean)
+            .map(n => n[0])
+            .join("")
+            .toUpperCase();
+          setUserInitials(initials || "U");
+        } else {
+          setUserName(extractUsername(user.email));
+          setUserInitials(getInitials(user.email));
+        }
       } else {
         setUserName(extractUsername(user.email));
         setUserInitials(getInitials(user.email));
