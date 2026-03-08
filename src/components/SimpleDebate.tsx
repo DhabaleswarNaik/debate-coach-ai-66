@@ -484,6 +484,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
           allocated_time: config.allocatedTime,
           transcript: transcript as any,
           scores: scores,
+          practice_mode: config.practiceMode,
         }]);
 
         if (error) {
