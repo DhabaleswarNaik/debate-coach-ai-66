@@ -153,7 +153,32 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+    @apply transition-all duration-300 hover:-translate-y-1;
+    &:hover {
+      box-shadow: var(--shadow-md), 0 0 20px hsl(var(--primary) / 0.15);
+    }
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300;
+    &:hover {
+      box-shadow: 0 0 25px hsl(var(--primary) / 0.3), 0 0 50px hsl(var(--primary) / 0.1);
+    }
+  }
+
+  .hover-glow-accent {
+    @apply transition-all duration-300;
+    &:hover {
+      box-shadow: 0 0 25px hsl(var(--accent) / 0.3), 0 0 50px hsl(var(--accent) / 0.1);
+    }
+  }
+
+  .hover-border-glow {
+    @apply transition-all duration-300 border-2 border-transparent;
+    &:hover {
+      border-color: hsl(var(--primary) / 0.5);
+      box-shadow: 0 0 15px hsl(var(--primary) / 0.2), inset 0 0 15px hsl(var(--primary) / 0.05);
+    }
   }
 
   .score-badge {
@@ -161,7 +186,39 @@
   }
 
   .metric-card {
-    @apply p-5 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 shadow-sm;
+    @apply p-5 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 shadow-sm transition-all duration-300;
+    &:hover {
+      @apply -translate-y-1;
+      box-shadow: var(--shadow-md), 0 0 30px hsl(var(--primary) / 0.12);
+      border-color: hsl(var(--primary) / 0.3);
+    }
+  }
+
+  .card-shine {
+    @apply relative overflow-hidden;
+    &::before {
+      content: '';
+      @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+      background: linear-gradient(135deg, transparent 30%, hsl(var(--primary) / 0.06) 50%, transparent 70%);
+    }
+    &:hover::before {
+      @apply opacity-100;
+    }
+  }
+
+  .glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .btn-glow {
+    @apply transition-all duration-300;
+    &:hover {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 4px 15px hsl(var(--primary) / 0.2);
+      transform: translateY(-1px);
+    }
+    &:active {
+      transform: translateY(0);
+    }
   }
 }
 
@@ -204,5 +261,19 @@
       opacity: 1;
       transform: scale(1);
     }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 10px hsl(var(--primary) / 0.2);
+    }
+    50% {
+      box-shadow: 0 0 25px hsl(var(--primary) / 0.4), 0 0 50px hsl(var(--primary) / 0.15);
+    }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 }
