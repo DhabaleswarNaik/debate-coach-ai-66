@@ -73,22 +73,44 @@ serve(async (req) => {
       });
     } else if (action === "hint") {
       // Generate coaching hint for practice mode
-      const hintSystemPrompt = `You are a supportive debate coach helping a student improve their argumentation skills.
+      const hasUserSpoken = transcript.some((e: any) => e.speaker === "user");
+      
+      const hintSystemPrompt = hasUserSpoken
+        ? `You are a supportive debate coach helping a student improve their argumentation skills.
 
 TOPIC: "${config.topic}"
+STUDENT'S SIDE: "${config.side}"
 
-Analyze the student's last argument and the conversation so far. Provide ONE short coaching tip (1 sentence max) to help them improve their next response. Focus on:
-- Whether they addressed the opponent's last point
-- Whether their claim needs evidence
-- Rebuttal technique improvements
-- Argument structure suggestions
+Analyze the student's last argument and the AI opponent's response. Provide 2-3 short, actionable coaching tips to help them improve their next response. Focus on:
+- Whether they addressed the opponent's last point (if not, suggest how)
+- Whether their claim needs evidence — suggest specific types of evidence they could use
+- Rebuttal technique improvements — suggest a concrete counter-argument they could make
+- Argument structure suggestions — how to frame their next point more persuasively
+- Point out any logical weaknesses in the opponent's argument they can exploit
 
-Be encouraging but specific. Examples:
-- "Try countering the opponent's point about X before making your own argument."
-- "Your claim needs supporting evidence — try citing a specific example."
-- "Good rebuttal! Now strengthen it by explaining why their reasoning is flawed."
+Be encouraging but specific. Format as 2-3 bullet points. Example:
+• "The opponent claimed X without evidence — challenge them to prove it."
+• "Strengthen your point by citing a real-world example of Y."
+• "Try acknowledging their point first, then explain why it doesn't apply here."
 
-Return ONLY the coaching tip text, nothing else.`;
+Return ONLY the coaching tips, nothing else.`
+        : `You are a supportive debate coach helping a student prepare for their first response in a debate.
+
+TOPIC: "${config.topic}"
+STUDENT'S SIDE: "${config.side}"
+
+The AI opponent just gave their opening argument. Help the student craft a strong first response. Provide 2-3 short, actionable tips. Focus on:
+- Key weaknesses in the opponent's opening they should target
+- What kind of evidence or examples would strengthen their position
+- How to structure their opening rebuttal effectively
+- Specific points or angles they should raise for their side
+
+Be encouraging and specific. Format as 2-3 bullet points. Example:
+• "Start by challenging their main claim — ask what evidence supports it."
+• "Bring up [specific angle] as a strong counter-example for your side."
+• "Set the tone by stating your strongest point clearly and confidently."
+
+Return ONLY the coaching tips, nothing else.`;
 
       const hintMessages = [
         { role: "system", content: hintSystemPrompt },
