@@ -652,19 +652,32 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
           <h3 className="font-semibold mb-3">
             {config.language === "hi" ? "बातचीत का रिकॉर्ड" : "Conversation Transcript"}
           </h3>
-          <ScrollArea className="h-[300px]" ref={scrollRef as any}>
+          <ScrollArea className="h-[400px]" ref={scrollRef as any}>
             {transcript.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">
                 {config.language === "hi" ? "अभी तक कोई बातचीत नहीं" : "No conversation yet"}
               </p>
             ) : (
-              <div className="space-y-3 pr-4 font-mono text-sm">
+              <div className="space-y-3 px-2 py-2">
                 {transcript.map((entry, index) => (
-                  <div key={index} className="flex gap-2">
-                    <span className="font-bold text-primary shrink-0">
-                      {entry.speaker === "user" ? "User:" : "AI:"}
-                    </span>
-                    <span className="text-foreground">{entry.text}</span>
+                  <div
+                    key={index}
+                    className={`flex ${entry.speaker === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed ${
+                        entry.speaker === "user"
+                          ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"
+                          : "bg-muted text-foreground rounded-2xl rounded-bl-md"
+                      }`}
+                    >
+                      <p className={`text-[10px] font-semibold uppercase tracking-wide mb-1 ${
+                        entry.speaker === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
+                      }`}>
+                        {entry.speaker === "user" ? "You" : "AI Opponent"}
+                      </p>
+                      {entry.text}
+                    </div>
                   </div>
                 ))}
               </div>
