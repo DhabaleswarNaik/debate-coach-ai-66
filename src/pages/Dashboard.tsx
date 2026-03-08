@@ -303,7 +303,7 @@ export default function Dashboard() {
                 {debates.map((debate, index) => (
                   <Card 
                     key={debate.id} 
-                    className="p-6 glass-card hover-lift cursor-pointer border-border/50 transition-all duration-300 hover:border-primary/30"
+                    className="p-6 glass-card hover-lift hover-border-glow card-shine cursor-pointer transition-all duration-300"
                     onClick={() => navigate(`/debate/${debate.id}`)}
                     style={{ animationDelay: `${0.05 * index}s` }}
                   >
