@@ -29,14 +29,17 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [currentUserText, setCurrentUserText] = useState("");
   const [debateStarted, setDebateStarted] = useState(false);
   const [liveRecordingTime, setLiveRecordingTime] = useState(0);
+  const [liveAITime, setLiveAITime] = useState(0);
   const [currentHint, setCurrentHint] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef(false);
   const userStartTimeRef = useRef<number | null>(null);
+  const aiStartTimeRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const accumulatedTextRef = useRef("");
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const aiTimerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -177,18 +180,37 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       
       utterance.onstart = () => {
         setIsAISpeaking(true);
+        aiStartTimeRef.current = Date.now();
+        setLiveAITime(0);
+        aiTimerIntervalRef.current = setInterval(() => {
+          if (aiStartTimeRef.current) {
+            setLiveAITime(Math.floor((Date.now() - aiStartTimeRef.current) / 1000));
+          }
+        }, 1000);
       };
       
       utterance.onend = () => {
+        if (aiTimerIntervalRef.current) {
+          clearInterval(aiTimerIntervalRef.current);
+          aiTimerIntervalRef.current = null;
+        }
         const duration = (Date.now() - startTime) / 1000;
         setTimeLog(prev => ({ ...prev, aiTotal: prev.aiTotal + duration }));
         setIsAISpeaking(false);
+        setLiveAITime(0);
+        aiStartTimeRef.current = null;
         resolve();
       };
 
       utterance.onerror = (event) => {
         console.error("Speech error:", event.error);
+        if (aiTimerIntervalRef.current) {
+          clearInterval(aiTimerIntervalRef.current);
+          aiTimerIntervalRef.current = null;
+        }
         setIsAISpeaking(false);
+        setLiveAITime(0);
+        aiStartTimeRef.current = null;
         resolve();
       };
 
@@ -460,9 +482,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
                 }
               </p>
             </div>
-            <div className="p-3 bg-muted/50 rounded-lg text-center">
+            <div className={`p-3 rounded-lg text-center ${isAISpeaking ? 'bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-500' : 'bg-muted/50'}`}>
               <p className="text-sm text-muted-foreground">AI Speaking Time</p>
-              <p className="text-xl font-mono">{Math.floor(timeLog.aiTotal)}s</p>
+              <p className="text-xl font-mono">
+                {isAISpeaking 
+                  ? `${Math.floor(timeLog.aiTotal) + liveAITime}s (speaking: ${liveAITime}s)`
+                  : `${Math.floor(timeLog.aiTotal)}s`
+                }
+              </p>
             </div>
           </div>
 
