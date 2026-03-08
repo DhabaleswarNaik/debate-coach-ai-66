@@ -249,12 +249,12 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button variant="outline" size="sm" onClick={() => navigate("/edit-profile")} className="hover:border-primary/40 transition-all duration-300">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto">
+              <Button variant="outline" size="sm" onClick={() => navigate("/edit-profile")} className="flex-1 sm:flex-none hover:border-primary/40 transition-all duration-300">
                 <Target className="w-4 h-4 mr-2" />
                 Edit Profile
               </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="flex-1 sm:flex-none hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
                 <LogOut className="w-4 h-4 mr-2" />
                 Log out
               </Button>
