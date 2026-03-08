@@ -180,18 +180,37 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       
       utterance.onstart = () => {
         setIsAISpeaking(true);
+        aiStartTimeRef.current = Date.now();
+        setLiveAITime(0);
+        aiTimerIntervalRef.current = setInterval(() => {
+          if (aiStartTimeRef.current) {
+            setLiveAITime(Math.floor((Date.now() - aiStartTimeRef.current) / 1000));
+          }
+        }, 1000);
       };
       
       utterance.onend = () => {
+        if (aiTimerIntervalRef.current) {
+          clearInterval(aiTimerIntervalRef.current);
+          aiTimerIntervalRef.current = null;
+        }
         const duration = (Date.now() - startTime) / 1000;
         setTimeLog(prev => ({ ...prev, aiTotal: prev.aiTotal + duration }));
         setIsAISpeaking(false);
+        setLiveAITime(0);
+        aiStartTimeRef.current = null;
         resolve();
       };
 
       utterance.onerror = (event) => {
         console.error("Speech error:", event.error);
+        if (aiTimerIntervalRef.current) {
+          clearInterval(aiTimerIntervalRef.current);
+          aiTimerIntervalRef.current = null;
+        }
         setIsAISpeaking(false);
+        setLiveAITime(0);
+        aiStartTimeRef.current = null;
         resolve();
       };
 
