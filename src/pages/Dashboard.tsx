@@ -30,6 +30,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | undefined>();
   const [userCreatedAt, setUserCreatedAt] = useState<string | undefined>();
+  const [userName, setUserName] = useState<string>("User");
+  const [userInitials, setUserInitials] = useState<string>("U");
   const navigate = useNavigate();
 
   const extractUsername = (email?: string) => {
