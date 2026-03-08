@@ -206,7 +206,7 @@ export default function EditProfile() {
           </h2>
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <div className="relative group">
-              <Avatar className="w-24 h-24 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40">
+              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40">
                 <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
                 <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
                   {getInitials()}
