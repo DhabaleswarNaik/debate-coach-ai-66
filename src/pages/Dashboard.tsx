@@ -63,6 +63,27 @@ export default function Dashboard() {
       setUserEmail(user.email);
       setUserCreatedAt(user.created_at);
 
+      // Fetch profile for name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.first_name) {
+        const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
+        setUserName(fullName);
+        const initials = [profile.first_name, profile.last_name]
+          .filter(Boolean)
+          .map(n => n[0])
+          .join("")
+          .toUpperCase();
+        setUserInitials(initials || "U");
+      } else {
+        setUserName(extractUsername(user.email));
+        setUserInitials(getInitials(user.email));
+      }
+
       const { data, error } = await supabase
         .from("debates")
         .select("*")
