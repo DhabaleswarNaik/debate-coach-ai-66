@@ -32,7 +32,7 @@ export default function Dashboard() {
 
   const extractUsername = (email?: string) => {
     if (!email) return "User";
-    return email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    return email.split("@")[0].replace(/[^a-zA-Z]/g, " ").replace(/\s+/g, " ").trim().replace(/\b\w/g, c => c.toUpperCase()) || "User";
   };
 
   const getInitials = (email?: string) => {
