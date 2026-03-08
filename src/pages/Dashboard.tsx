@@ -156,7 +156,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <ExportPortfolio debates={debates} userName={userName} />
-            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md">
+            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md btn-glow">
               <Sparkles className="w-4 h-4 mr-2" />
               New Debate
             </Button>
