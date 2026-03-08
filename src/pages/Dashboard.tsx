@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [userCreatedAt, setUserCreatedAt] = useState<string | undefined>();
   const [userName, setUserName] = useState<string>("User");
   const [userInitials, setUserInitials] = useState<string>("U");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const extractUsername = (email?: string) => {
