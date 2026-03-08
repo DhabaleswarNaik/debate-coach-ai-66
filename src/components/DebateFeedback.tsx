@@ -9,10 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 interface DebateFeedbackProps {
   config: DebateConfig;
   onNewDebate: () => void;
+  onRematch?: () => void;
   userId?: string;
 }
 
-export const DebateFeedback = ({ config, onNewDebate, userId }: DebateFeedbackProps) => {
+export const DebateFeedback = ({ config, onNewDebate, onRematch, userId }: DebateFeedbackProps) => {
   const [scores, setScores] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
