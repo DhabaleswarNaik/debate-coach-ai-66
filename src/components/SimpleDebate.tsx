@@ -482,9 +482,14 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
                 }
               </p>
             </div>
-            <div className="p-3 bg-muted/50 rounded-lg text-center">
+            <div className={`p-3 rounded-lg text-center ${isAISpeaking ? 'bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-500' : 'bg-muted/50'}`}>
               <p className="text-sm text-muted-foreground">AI Speaking Time</p>
-              <p className="text-xl font-mono">{Math.floor(timeLog.aiTotal)}s</p>
+              <p className="text-xl font-mono">
+                {isAISpeaking 
+                  ? `${Math.floor(timeLog.aiTotal) + liveAITime}s (speaking: ${liveAITime}s)`
+                  : `${Math.floor(timeLog.aiTotal)}s`
+                }
+              </p>
             </div>
           </div>
 
