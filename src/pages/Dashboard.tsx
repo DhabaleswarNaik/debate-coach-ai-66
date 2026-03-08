@@ -221,7 +221,7 @@ export default function Dashboard() {
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
               Start your first debate to see your performance history and track your improvement over time
             </p>
-            <Button size="lg" onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-lg">
+            <Button size="lg" onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-lg btn-glow">
               <Sparkles className="w-5 h-5 mr-2" />
               Start Your First Debate
             </Button>
