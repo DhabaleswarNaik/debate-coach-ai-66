@@ -166,7 +166,7 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* User Profile Card */}
-        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative">
+        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative hover-glow card-shine">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
             <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg">
