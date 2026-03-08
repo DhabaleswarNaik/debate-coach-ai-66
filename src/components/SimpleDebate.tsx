@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb } from "lucide-react";
+import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb, MessageSquare, CheckCircle } from "lucide-react";
 import { DebateConfig } from "./DebateSetup";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
