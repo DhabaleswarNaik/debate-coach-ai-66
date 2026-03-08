@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import DebateDetail from "./pages/DebateDetail";
 import ResetPassword from "./pages/ResetPassword";
+import EditProfile from "./pages/EditProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
