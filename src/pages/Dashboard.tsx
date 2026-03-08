@@ -70,7 +70,7 @@ export default function Dashboard() {
       // Fetch profile for name
       const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name, last_name")
+        .select("first_name, last_name, avatar_url")
         .eq("id", user.id)
         .single();
 
