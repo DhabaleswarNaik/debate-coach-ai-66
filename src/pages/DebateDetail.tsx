@@ -194,7 +194,7 @@ export default function DebateDetail() {
       {/* Header */}
       <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
         <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">
