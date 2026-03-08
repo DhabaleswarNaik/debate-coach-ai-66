@@ -311,15 +311,31 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       if (error) throw error;
 
       const aiText = data.response;
+      const aiEntry: TranscriptEntry = { speaker: "ai", text: aiText, timestamp: Date.now() };
       
-      setTranscript([{
-        speaker: "ai",
-        text: aiText,
-        timestamp: Date.now()
-      }]);
-
+      setTranscript([aiEntry]);
       setIsProcessing(false);
-      await speakText(aiText);
+
+      // In practice mode, fetch opening hint in parallel with TTS
+      const hintPromise = config.practiceMode
+        ? supabase.functions.invoke('debate-ai', {
+            body: {
+              action: "hint",
+              config: {
+                topic: config.topic,
+                difficulty: config.difficulty,
+                side: config.side,
+                language: config.language
+              },
+              transcript: [aiEntry],
+              userMessage: ""
+            }
+          }).then(({ data: hintData }) => {
+            if (hintData?.hint) setCurrentHint(hintData.hint);
+          }).catch(e => console.error("Error fetching opening hint:", e))
+        : Promise.resolve();
+
+      await Promise.all([speakText(aiText), hintPromise]);
       
     } catch (error) {
       console.error("Error starting debate:", error);
