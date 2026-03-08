@@ -158,7 +158,7 @@ Format with bullet points. Keep each point to 1-2 sentences.`;
       const data = await response.json();
       const hint = data.choices[0].message.content;
 
-      return new Response(JSON.stringify({ hint }), {
+      return new Response(JSON.stringify({ hint, hintType }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else if (action === "evaluate") {
