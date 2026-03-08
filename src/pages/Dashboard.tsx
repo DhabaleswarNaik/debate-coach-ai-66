@@ -211,8 +211,8 @@ export default function Dashboard() {
         {/* User Profile Card */}
         <Card className="p-6 glass-card animate-fade-up overflow-hidden relative hover-glow hover-scale-card card-shine group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full transition-all duration-500 group-hover:from-primary/10" />
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
-            <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-primary/20 group-hover:scale-105">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative">
+            <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-primary/20 group-hover:scale-105">
               <AvatarImage src={avatarUrl || undefined} alt={userName} />
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
                 {userInitials}
