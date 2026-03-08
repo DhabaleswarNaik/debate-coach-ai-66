@@ -197,7 +197,7 @@ export default function EditProfile() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-4 sm:space-y-6">
         {/* Avatar Section */}
         <Card className="p-6 glass-card animate-fade-up">
           <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
