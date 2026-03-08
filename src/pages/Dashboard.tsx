@@ -241,10 +241,16 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
-              <LogOut className="w-4 h-4 mr-2" />
-              Log out
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="outline" size="sm" onClick={() => navigate("/edit-profile")} className="hover:border-primary/40 transition-all duration-300">
+                <Target className="w-4 h-4 mr-2" />
+                Edit Profile
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
+                <LogOut className="w-4 h-4 mr-2" />
+                Log out
+              </Button>
+            </div>
           </div>
         </Card>
 
