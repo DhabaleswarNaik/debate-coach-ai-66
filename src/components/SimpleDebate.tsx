@@ -588,14 +588,36 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
 
         {/* Practice Mode Hint */}
         {currentHint && (
-          <Card className="p-4 border-2 border-accent/30 bg-accent/5">
+          <Card className={`p-4 border-2 ${
+            hintType === "post_speech_review" 
+              ? "border-primary/30 bg-primary/5" 
+              : "border-accent/30 bg-accent/5"
+          }`}>
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                <Lightbulb className="w-4 h-4 text-accent" />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                hintType === "post_speech_review" ? "bg-primary/10" : "bg-accent/10"
+              }`}>
+                {hintType === "post_speech_review" ? (
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                ) : hintType === "opening_guide" ? (
+                  <MessageSquare className="w-4 h-4 text-accent" />
+                ) : (
+                  <Lightbulb className="w-4 h-4 text-accent" />
+                )}
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">Coaching Hint</p>
-                <p className="text-sm text-foreground">{currentHint}</p>
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${
+                  hintType === "post_speech_review" ? "text-primary" : "text-accent"
+                }`}>
+                  {hintType === "post_speech_review" 
+                    ? "📝 Review & Next Steps" 
+                    : hintType === "opening_guide" 
+                      ? "🎯 How to Respond" 
+                      : "💡 Suggested Approach"}
+                </p>
+                <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">
+                  {currentHint}
+                </div>
               </div>
             </div>
           </Card>
