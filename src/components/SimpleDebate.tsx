@@ -273,7 +273,10 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
               userMessage: userText
             }
           }).then(({ data: hintData }) => {
-            if (hintData?.hint) setCurrentHint(hintData.hint);
+            if (hintData?.hint) {
+              setCurrentHint(hintData.hint);
+              setHintType(hintData.hintType || "response_guide");
+            }
           }).catch(e => console.error("Error fetching hint:", e))
         : Promise.resolve();
 
