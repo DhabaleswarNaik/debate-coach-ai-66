@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { MessageSquare, Sparkles, Zap, Shield, Target, GraduationCap } from "lucide-react";
+import { Sparkles, Zap, Shield, Target, GraduationCap } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 
 interface DebateSetupProps {
   onStart: (config: DebateConfig) => void;

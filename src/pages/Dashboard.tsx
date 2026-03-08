@@ -150,6 +150,7 @@ export default function Dashboard() {
       <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
+            <img src={logo} alt="Logo" className="w-10 h-10 object-contain hover:scale-110 transition-transform duration-300" />
             <div>
               <h1 className="text-2xl font-display font-bold gradient-text">Dashboard</h1>
               <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>

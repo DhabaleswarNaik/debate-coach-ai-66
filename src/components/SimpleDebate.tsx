@@ -7,6 +7,7 @@ import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb, MessageSquare, Ch
 import { DebateConfig } from "./DebateSetup";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import logo from "@/assets/logo.png";
 
 interface SimpleDebateProps {
   config: DebateConfig;
