@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
 import { SkillBadges } from "@/components/SkillBadges";
 import { ExportPortfolio } from "@/components/ExportPortfolio";
+import { StreakTracker } from "@/components/StreakTracker";
+import { PersonalBests } from "@/components/PersonalBests";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoGlow } from "@/components/LogoGlow";
 import logo from "@/assets/logo.png";
