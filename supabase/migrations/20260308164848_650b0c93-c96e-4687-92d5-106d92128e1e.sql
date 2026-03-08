@@ -1,0 +1,1 @@
+ALTER TABLE public.debates ADD COLUMN practice_mode boolean NOT NULL DEFAULT false;

@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           difficulty: string
           id: string
+          practice_mode: boolean
           scores: Json | null
           side: string
           topic: string
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           difficulty: string
           id?: string
+          practice_mode?: boolean
           scores?: Json | null
           side: string
           topic: string
@@ -42,6 +44,7 @@ export type Database = {
           created_at?: string
           difficulty?: string
           id?: string
+          practice_mode?: boolean
           scores?: Json | null
           side?: string
           topic?: string

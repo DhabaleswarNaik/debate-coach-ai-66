@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Trophy, Calendar, TrendingUp, Target, Award, Sparkles, Mail, LogOut, BarChart3 } from "lucide-react";
+import { ArrowLeft, Trophy, Calendar, TrendingUp, Target, Award, Sparkles, Mail, LogOut, BarChart3, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
 import { SkillBadges } from "@/components/SkillBadges";
@@ -21,6 +21,7 @@ interface Debate {
   created_at: string;
   scores: any;
   transcript?: any;
+  practice_mode?: boolean;
 }
 
 export default function Dashboard() {
@@ -314,6 +315,12 @@ export default function Dashboard() {
                           <div className="flex flex-wrap gap-2">
                             <Badge variant="outline" className="capitalize">{debate.difficulty}</Badge>
                             <Badge variant="outline" className="capitalize">{debate.side}</Badge>
+                            {debate.practice_mode && (
+                              <Badge className="bg-accent/15 text-accent border border-accent/30 gap-1">
+                                <GraduationCap className="w-3 h-3" />
+                                Practice
+                              </Badge>
+                            )}
                           </div>
                         </div>
 
