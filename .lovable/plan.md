@@ -1,58 +1,31 @@
 
-# Practice Mode with Real-Time Hints
 
-## Overview
-Add a toggle in the Debate Setup screen to enable "Practice Mode." When active, the AI will provide coaching hints after each user turn -- suggestions like "Try addressing their last point" or "Support your claim with evidence" -- displayed as a styled hint card in the debate UI. This acts as training wheels for beginners.
+## Suggested Features for Your Debate Coach AI
 
-## Changes
+Based on reviewing your project, here are minimal yet impactful features you could add:
 
-### 1. Update `DebateConfig` interface (DebateSetup.tsx)
-- Add `practiceMode: boolean` to the `DebateConfig` interface.
-- Add a toggle button in the setup form (between Side Selection and Start Button) using the existing Switch component from shadcn/ui.
-- The toggle will have a label like "Practice Mode" with a short description: "Get real-time coaching hints during the debate."
+### 1. Custom Topic Input
+Currently users pick from 10 preset topics. Allow typing a custom debate topic for unlimited flexibility. Minimal change: add a text input option alongside the dropdown in DebateSetup.
 
-### 2. Update `DebateSetup` component UI (DebateSetup.tsx)
-- Add state: `const [practiceMode, setPracticeMode] = useState(false);`
-- Pass `practiceMode` into the `onStart` config.
-- Render a new section with a `Switch` toggle and a `GraduationCap` icon from lucide-react.
+### 2. Debate Streak Tracker
+Show a "daily streak" counter on the Dashboard (consecutive days with at least one debate). Motivates regular practice. Calculated from existing `created_at` data — no schema changes needed.
 
-### 3. Update `SimpleDebate` component (SimpleDebate.tsx)
-- Add a `currentHint` state to store the latest coaching hint.
-- After the AI responds to the user's turn, if `config.practiceMode` is true, make a second call to the `debate-ai` edge function with a new action `"hint"` that asks the AI to generate a short coaching hint based on the user's last argument.
-- Display the hint in a styled card (with a lightbulb icon) between the recording controls and the transcript, only when a hint is available.
-- Clear the hint when the user starts a new recording.
+### 3. Share Debate Results
+Add a "Share" button on the feedback/detail page that copies a shareable summary (topic, score, key stats) to clipboard or generates a share link. Great for social proof.
 
-### 4. Update `debate-ai` edge function (supabase/functions/debate-ai/index.ts)
-- Add a new `action === "hint"` handler.
-- It will use a specialized system prompt that acts as a debate coach (not an opponent), analyzing the user's last message and the conversation context.
-- The prompt will instruct the AI to return a single short coaching tip (1 sentence) such as:
-  - "Try countering the opponent's point about X before making your own argument."
-  - "Your claim needs supporting evidence -- try citing a specific example."
-  - "Good rebuttal! Now strengthen it by explaining why their reasoning is flawed."
-- Uses the same Gemini model with low temperature (0.5) for consistent hints.
+### 4. Quick Rematch
+After a debate ends, add a "Rematch" button that starts a new debate with the same config but swaps your side. Helps users practice arguing both perspectives.
 
-## Technical Details
+### 5. Debate Stats Leaderboard (Personal Bests)
+Show personal records on the dashboard: highest score, longest streak, most debates in a day. Gamification without needing multi-user infrastructure.
 
-```text
-Setup Screen                    Active Debate Screen
-+-------------------------+    +---------------------------+
-| ...existing fields...   |    | Topic / Badges            |
-|                         |    | Speaking Time Stats       |
-| [Practice Mode Toggle]  |    |                           |
-|   Switch + description  |    | [Recording Controls]      |
-|                         |    |                           |
-| [Start Debate]          |    | +--- Hint Card ----------+|
-+-------------------------+    | | Lightbulb icon          ||
-                               | | "Try addressing their   ||
-                               | |  last point about..."   ||
-                               | +------------------------+||
-                               |                           |
-                               | [Transcript]              |
-                               +---------------------------+
-```
+### 6. Profile Edit Page
+Let users update their first/last name and add an avatar from the dashboard. Currently names are set only at signup with no way to change them.
 
-### Files to modify:
-1. **src/components/DebateSetup.tsx** -- Add `practiceMode` to config interface, add Switch toggle UI
-2. **src/components/SimpleDebate.tsx** -- Add hint state, hint fetch logic after AI response, hint display card
-3. **supabase/functions/debate-ai/index.ts** -- Add `"hint"` action handler with coaching prompt
-4. **src/pages/Index.tsx** -- No changes needed (config passes through automatically)
+### 7. Sound Effects & Audio Feedback
+Add subtle sound effects for debate start, timer warnings (30s, 10s remaining), and debate end. Enhances the competitive feel with minimal code.
+
+---
+
+Which of these interest you? Pick one or more and I'll implement them.
+
