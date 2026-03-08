@@ -95,7 +95,7 @@ export function PersonalBests({ debates }: PersonalBestsProps) {
   return (
     <div>
       <h2 className="text-xl font-display font-bold mb-4">Personal Bests</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {records.map((record, i) => (
           <Card
             key={record.label}

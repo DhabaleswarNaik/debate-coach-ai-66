@@ -197,16 +197,16 @@ export default function EditProfile() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-4 sm:space-y-6">
         {/* Avatar Section */}
-        <Card className="p-6 glass-card animate-fade-up">
-          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up">
+          <h2 className="text-base sm:text-lg font-display font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             <Camera className="w-5 h-5 text-primary" />
             Profile Photo
           </h2>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <div className="relative group">
-              <Avatar className="w-24 h-24 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40">
+              <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40">
                 <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
                 <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
                   {getInitials()}
@@ -220,7 +220,7 @@ export default function EditProfile() {
                 <Camera className="w-6 h-6 text-white" />
               </button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 text-center sm:text-left">
               <Button
                 variant="outline"
                 size="sm"
@@ -242,7 +242,7 @@ export default function EditProfile() {
         </Card>
 
         {/* Name Section */}
-        <Card className="p-6 glass-card animate-fade-up" style={{ animationDelay: "0.05s" }}>
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up" style={{ animationDelay: "0.05s" }}>
           <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
             <User className="w-5 h-5 text-primary" />
             Personal Info
@@ -276,8 +276,8 @@ export default function EditProfile() {
         </Card>
 
         {/* Email Section */}
-        <Card className="p-6 glass-card animate-fade-up" style={{ animationDelay: "0.1s" }}>
-          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <h2 className="text-base sm:text-lg font-display font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             <Mail className="w-5 h-5 text-primary" />
             Email Address
           </h2>
@@ -307,8 +307,8 @@ export default function EditProfile() {
         </Card>
 
         {/* Password Section */}
-        <Card className="p-6 glass-card animate-fade-up" style={{ animationDelay: "0.15s" }}>
-          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up" style={{ animationDelay: "0.15s" }}>
+          <h2 className="text-base sm:text-lg font-display font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             <Lock className="w-5 h-5 text-primary" />
             Password
           </h2>

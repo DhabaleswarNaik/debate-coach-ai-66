@@ -187,21 +187,21 @@ export default function Dashboard() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
             <LogoGlow size="sm" />
-            <div>
-              <h1 className="text-2xl font-display font-bold gradient-text">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-display font-bold gradient-text truncate">Dashboard</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">Welcome back, {userName}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <ThemeToggle />
-            <ExportPortfolio debates={debates} userName={userName} />
-            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md btn-glow">
-              <Sparkles className="w-4 h-4 mr-2" />
-              New Debate
+            <span className="hidden sm:inline-flex"><ExportPortfolio debates={debates} userName={userName} /></span>
+            <Button onClick={() => navigate("/new-debate")} size="sm" className="bg-primary hover:bg-primary-hover shadow-md btn-glow">
+              <Sparkles className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">New Debate</span>
             </Button>
           </div>
         </div>
@@ -211,8 +211,8 @@ export default function Dashboard() {
         {/* User Profile Card */}
         <Card className="p-6 glass-card animate-fade-up overflow-hidden relative hover-glow hover-scale-card card-shine group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full transition-all duration-500 group-hover:from-primary/10" />
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
-            <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-primary/20 group-hover:scale-105">
+           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 relative">
+            <Avatar className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-primary/20 group-hover:scale-105">
               <AvatarImage src={avatarUrl || undefined} alt={userName} />
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
                 {userInitials}
@@ -249,12 +249,12 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button variant="outline" size="sm" onClick={() => navigate("/edit-profile")} className="hover:border-primary/40 transition-all duration-300">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto">
+              <Button variant="outline" size="sm" onClick={() => navigate("/edit-profile")} className="flex-1 sm:flex-none hover:border-primary/40 transition-all duration-300">
                 <Target className="w-4 h-4 mr-2" />
                 Edit Profile
               </Button>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
+              <Button variant="outline" size="sm" onClick={handleLogout} className="flex-1 sm:flex-none hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
                 <LogOut className="w-4 h-4 mr-2" />
                 Log out
               </Button>
