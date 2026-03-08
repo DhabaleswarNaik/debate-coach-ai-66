@@ -165,7 +165,7 @@ export default function Dashboard() {
   const bestScore = getBestScore();
   const streak = getStreak();
   const topDifficulty = getTopDifficulty();
-  const userName = extractUsername(userEmail);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
