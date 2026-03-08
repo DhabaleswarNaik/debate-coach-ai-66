@@ -417,6 +417,30 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     const userText = accumulatedTextRef.current.trim() || currentUserText.trim();
     
     if (userText) {
+      // In practice mode, show immediate review of user's speech first
+      if (config.practiceMode) {
+        setCurrentHint(null);
+        setHintType("post_speech_review");
+        // Fire review hint (don't await — it shows while AI is thinking)
+        supabase.functions.invoke('debate-ai', {
+          body: {
+            action: "hint",
+            config: {
+              topic: config.topic,
+              difficulty: config.difficulty,
+              side: config.side,
+              language: config.language
+            },
+            transcript: [...transcript, { speaker: "user", text: userText, timestamp: Date.now() }],
+            userMessage: userText
+          }
+        }).then(({ data: hintData }) => {
+          if (hintData?.hint) {
+            setCurrentHint(hintData.hint);
+            setHintType(hintData.hintType || "post_speech_review");
+          }
+        }).catch(e => console.error("Error fetching review hint:", e));
+      }
       await getAIResponse(userText);
     } else {
       toast.info(config.language === "hi" ? "कोई भाषण नहीं मिला" : "No speech detected. Please try speaking louder.");
