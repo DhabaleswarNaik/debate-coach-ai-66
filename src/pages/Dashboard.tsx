@@ -156,7 +156,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <ExportPortfolio debates={debates} userName={userName} />
-            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md">
+            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md btn-glow">
               <Sparkles className="w-4 h-4 mr-2" />
               New Debate
             </Button>
@@ -166,7 +166,7 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* User Profile Card */}
-        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative">
+        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative hover-glow card-shine">
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
             <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg">
@@ -221,7 +221,7 @@ export default function Dashboard() {
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
               Start your first debate to see your performance history and track your improvement over time
             </p>
-            <Button size="lg" onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-lg">
+            <Button size="lg" onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-lg btn-glow">
               <Sparkles className="w-5 h-5 mr-2" />
               Start Your First Debate
             </Button>
@@ -303,7 +303,7 @@ export default function Dashboard() {
                 {debates.map((debate, index) => (
                   <Card 
                     key={debate.id} 
-                    className="p-6 glass-card hover-lift cursor-pointer border-border/50 transition-all duration-300 hover:border-primary/30"
+                    className="p-6 glass-card hover-lift hover-border-glow card-shine cursor-pointer transition-all duration-300"
                     onClick={() => navigate(`/debate/${debate.id}`)}
                     style={{ animationDelay: `${0.05 * index}s` }}
                   >
