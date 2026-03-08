@@ -241,6 +241,13 @@ export default function DebateDetail() {
                 {reanalyzing ? 'Analyzing...' : 'Analyze Debate'}
               </Button>
               <Button variant="outline" onClick={() => navigate("/new-debate")}>Start New Debate</Button>
+              <Button variant="secondary" onClick={() => {
+                const swappedSide = debate.side === "proposition" ? "opposition" : "proposition";
+                navigate("/", { state: { rematch: { ...debate, side: swappedSide } } });
+              }}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Rematch ({debate.side === "proposition" ? "Opposition" : "Proposition"})
+              </Button>
             </div>
           </Card>
         )}
