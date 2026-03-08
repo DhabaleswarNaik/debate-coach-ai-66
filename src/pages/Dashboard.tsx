@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
 import { SkillBadges } from "@/components/SkillBadges";
 import { ExportPortfolio } from "@/components/ExportPortfolio";
+import { StreakTracker } from "@/components/StreakTracker";
+import { PersonalBests } from "@/components/PersonalBests";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoGlow } from "@/components/LogoGlow";
 import logo from "@/assets/logo.png";
@@ -286,8 +288,16 @@ export default function Dashboard() {
               ))}
             </div>
 
+            {/* Streak Tracker & Personal Bests */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.1s' }}>
+              <StreakTracker debates={debates} />
+              <div className="md:col-span-2">
+                <PersonalBests debates={debates} />
+              </div>
+            </div>
+
             {/* Skill Badges */}
-            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.1s' }}>
+            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.15s' }}>
               <SkillBadges debates={debates} />
             </div>
 
