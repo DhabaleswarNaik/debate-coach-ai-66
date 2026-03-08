@@ -30,6 +30,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | undefined>();
   const [userCreatedAt, setUserCreatedAt] = useState<string | undefined>();
+  const [userName, setUserName] = useState<string>("User");
+  const [userInitials, setUserInitials] = useState<string>("U");
   const navigate = useNavigate();
 
   const extractUsername = (email?: string) => {
@@ -60,6 +62,27 @@ export default function Dashboard() {
 
       setUserEmail(user.email);
       setUserCreatedAt(user.created_at);
+
+      // Fetch profile for name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.first_name) {
+        const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
+        setUserName(fullName);
+        const initials = [profile.first_name, profile.last_name]
+          .filter(Boolean)
+          .map(n => n[0])
+          .join("")
+          .toUpperCase();
+        setUserInitials(initials || "U");
+      } else {
+        setUserName(extractUsername(user.email));
+        setUserInitials(getInitials(user.email));
+      }
 
       const { data, error } = await supabase
         .from("debates")
@@ -142,7 +165,7 @@ export default function Dashboard() {
   const bestScore = getBestScore();
   const streak = getStreak();
   const topDifficulty = getTopDifficulty();
-  const userName = extractUsername(userEmail);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
@@ -174,7 +197,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
             <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg">
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
-                {getInitials(userEmail)}
+                {userInitials}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-2">
