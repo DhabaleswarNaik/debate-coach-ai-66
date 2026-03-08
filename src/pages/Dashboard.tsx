@@ -315,6 +315,12 @@ export default function Dashboard() {
                           <div className="flex flex-wrap gap-2">
                             <Badge variant="outline" className="capitalize">{debate.difficulty}</Badge>
                             <Badge variant="outline" className="capitalize">{debate.side}</Badge>
+                            {debate.practice_mode && (
+                              <Badge className="bg-accent/15 text-accent border border-accent/30 gap-1">
+                                <GraduationCap className="w-3 h-3" />
+                                Practice
+                              </Badge>
+                            )}
                           </div>
                         </div>
 
