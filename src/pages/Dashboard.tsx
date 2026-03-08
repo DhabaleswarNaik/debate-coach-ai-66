@@ -11,6 +11,7 @@ import { PerformanceCharts } from "@/components/PerformanceCharts";
 import { SkillBadges } from "@/components/SkillBadges";
 import { ExportPortfolio } from "@/components/ExportPortfolio";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import logo from "@/assets/logo.png";
 
 interface Debate {
   id: string;
