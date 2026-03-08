@@ -197,7 +197,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
             <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg">
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
-                {getInitials(userEmail)}
+                {userInitials}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-2">
