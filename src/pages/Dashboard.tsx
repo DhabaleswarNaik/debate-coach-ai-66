@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Trophy, Clock, Calendar, TrendingUp, Target, Award, Sparkles } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ArrowLeft, Trophy, Calendar, TrendingUp, Target, Award, Sparkles, Mail, LogOut, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
 import { SkillBadges } from "@/components/SkillBadges";
@@ -26,7 +27,21 @@ export default function Dashboard() {
   const [debates, setDebates] = useState<Debate[]>([]);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | undefined>();
+  const [userCreatedAt, setUserCreatedAt] = useState<string | undefined>();
   const navigate = useNavigate();
+
+  const extractUsername = (email?: string) => {
+    if (!email) return "User";
+    return email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  };
+
+  const getInitials = (email?: string) => {
+    if (!email) return "U";
+    const name = email.split("@")[0];
+    const parts = name.split(/[._-]/);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
 
   useEffect(() => {
     fetchDebates();
@@ -42,6 +57,7 @@ export default function Dashboard() {
       }
 
       setUserEmail(user.email);
+      setUserCreatedAt(user.created_at);
 
       const { data, error } = await supabase
         .from("debates")
@@ -57,6 +73,11 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
   };
 
   const formatDate = (dateString: string) => {
@@ -87,6 +108,23 @@ export default function Dashboard() {
     return "text-destructive";
   };
 
+  const getStreak = () => {
+    let streak = 0;
+    for (const d of debates) {
+      if (d.scores?.final_score >= 60) streak++;
+      else break;
+    }
+    return streak;
+  };
+
+  const getTopDifficulty = () => {
+    const difficulties = ["advanced", "intermediate", "beginner"];
+    for (const diff of difficulties) {
+      if (debates.some(d => d.difficulty === diff && d.scores?.final_score >= 60)) return diff;
+    }
+    return null;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -100,6 +138,9 @@ export default function Dashboard() {
 
   const avgScore = getAverageScore();
   const bestScore = getBestScore();
+  const streak = getStreak();
+  const topDifficulty = getTopDifficulty();
+  const userName = extractUsername(userEmail);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
@@ -112,12 +153,12 @@ export default function Dashboard() {
             </Button>
             <div>
               <h1 className="text-2xl font-display font-bold gradient-text">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Track your debate performance</p>
+              <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <ExportPortfolio debates={debates} userName={userEmail} />
+            <ExportPortfolio debates={debates} userName={userName} />
             <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary-hover shadow-md">
               <Sparkles className="w-4 h-4 mr-2" />
               New Debate
@@ -127,6 +168,53 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+        {/* User Profile Card */}
+        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
+            <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
+                {getInitials(userEmail)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 space-y-2">
+              <h2 className="text-2xl font-display font-bold">{userName}</h2>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Mail className="w-4 h-4" />
+                <span>{userEmail}</span>
+              </div>
+              {userCreatedAt && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Calendar className="w-4 h-4" />
+                  <span>Member since {formatDate(userCreatedAt)}</span>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Badge variant="secondary" className="gap-1">
+                  <Target className="w-3 h-3" />
+                  {debates.length} debate{debates.length !== 1 ? 's' : ''}
+                </Badge>
+                {streak > 0 && (
+                  <Badge variant="secondary" className="gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    {streak} win streak
+                  </Badge>
+                )}
+                {topDifficulty && (
+                  <Badge variant="secondary" className="gap-1 capitalize">
+                    <Award className="w-3 h-3" />
+                    {topDifficulty} level
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0">
+              <LogOut className="w-4 h-4 mr-2" />
+              Log out
+            </Button>
+          </div>
+        </Card>
+
         {debates.length === 0 ? (
           <Card className="p-16 text-center glass-card animate-fade-up">
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -144,27 +232,27 @@ export default function Dashboard() {
         ) : (
           <>
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-up">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 animate-fade-up">
               <Card className="metric-card hover-lift">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md">
-                    <Target className="w-7 h-7 text-primary-foreground" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md">
+                    <Target className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground font-medium">Total Debates</p>
-                    <p className="text-3xl font-display font-bold">{debates.length}</p>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Debates</p>
+                    <p className="text-2xl font-display font-bold">{debates.length}</p>
                   </div>
                 </div>
               </Card>
 
               <Card className="metric-card hover-lift">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-md">
-                    <TrendingUp className="w-7 h-7 text-accent-foreground" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-md">
+                    <TrendingUp className="w-6 h-6 text-accent-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground font-medium">Average Score</p>
-                    <p className={`text-3xl font-display font-bold ${avgScore ? getScoreColor(avgScore) : ''}`}>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Avg Score</p>
+                    <p className={`text-2xl font-display font-bold ${avgScore ? getScoreColor(avgScore) : ''}`}>
                       {avgScore ?? '—'}
                     </p>
                   </div>
@@ -173,14 +261,26 @@ export default function Dashboard() {
 
               <Card className="metric-card hover-lift">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center shadow-md">
-                    <Award className="w-7 h-7 text-secondary-foreground" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center shadow-md">
+                    <Award className="w-6 h-6 text-secondary-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground font-medium">Best Score</p>
-                    <p className={`text-3xl font-display font-bold ${bestScore ? getScoreColor(bestScore) : ''}`}>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Best Score</p>
+                    <p className={`text-2xl font-display font-bold ${bestScore ? getScoreColor(bestScore) : ''}`}>
                       {bestScore ?? '—'}
                     </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="metric-card hover-lift">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/80 to-accent/60 flex items-center justify-center shadow-md">
+                    <BarChart3 className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Win Streak</p>
+                    <p className="text-2xl font-display font-bold">{streak}</p>
                   </div>
                 </div>
               </Card>
