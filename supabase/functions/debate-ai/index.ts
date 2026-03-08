@@ -80,52 +80,35 @@ serve(async (req) => {
       let hintType: string;
 
       if (!hasUserSpoken) {
-        // After AI's opening — suggest what the student should say
         hintType = "opening_guide";
-        hintSystemPrompt = `You are an expert debate coach. The AI opponent just gave their opening argument on the topic: "${config.topic}".
-The student is arguing: "${config.side}".
+        hintSystemPrompt = `You are a debate coach. Topic: "${config.topic}". Student argues: "${config.side}".
 
-Based on EXACTLY what the opponent just said, give the student a concrete game plan for their first response. Include:
+The opponent just gave their opening. Give exactly 3 ultra-short bullet tips:
+• Attack: One specific weakness in opponent's argument (1 line)
+• Say this: One power sentence the student should open with (1 line)  
+• Approach: One word — aggressive/measured/questioning (1 line)
 
-1. **What to say first**: A specific opening line or approach to grab attention (e.g., "Start by saying: '[example sentence]'")
-2. **Key weakness to attack**: Identify the weakest point in the opponent's argument and explain exactly how to challenge it
-3. **Your strongest angle**: Suggest the most powerful argument for the student's side with a specific example or evidence they should mention
-4. **Recommended approach**: Should they be aggressive, measured, question-based, or evidence-heavy? Why?
-
-Be specific to what the opponent actually said — don't give generic advice. Use the opponent's exact claims to craft targeted suggestions.
-Format with bullet points. Keep each point to 1-2 sentences.`;
+CRITICAL: Each bullet must be ONE short sentence max. No headers, no numbering, no explanations. Just 3 bullet points.`;
       } else if (lastSpeaker === "user" || userMessage) {
-        // After user spoke — give corrections, enhancements, additional points
         hintType = "post_speech_review";
-        hintSystemPrompt = `You are an expert debate coach reviewing a student's argument in real-time. 
-Topic: "${config.topic}". Student's side: "${config.side}".
+        hintSystemPrompt = `You are a debate coach. Topic: "${config.topic}". Student argues: "${config.side}".
 
-The student just finished speaking. Analyze what they said and the opponent's previous points. Provide:
+The student just spoke. Give exactly 3 ultra-short bullet tips:
+• Good: One thing they did well (1 line)
+• Fix: One correction or missing point (1 line)
+• Next: One sentence they should say next (1 line)
 
-1. **What you did well**: Briefly acknowledge one strength (be specific, not generic)
-2. **Corrections needed**: If they made any logical errors, factual mistakes, or weak arguments, point them out and explain how to fix them
-3. **Missing points**: What important arguments or evidence did they forget to mention? Suggest 1-2 specific additional points they should raise next
-4. **Next move**: Based on what the opponent is likely to say next, suggest what approach and talking points to prepare
-5. **Power phrase**: Give them one strong sentence they can use in their next turn (e.g., "Try saying: '[specific rebuttal]'")
-
-Be honest but encouraging. Reference their ACTUAL words and the opponent's ACTUAL claims — no generic advice.
-Format with bullet points. Keep each point to 1-2 sentences.`;
+CRITICAL: Each bullet must be ONE short sentence max. No headers, no numbering, no explanations. Just 3 bullet points.`;
       } else {
-        // After AI responded to user — suggest what to say next
         hintType = "response_guide";
-        hintSystemPrompt = `You are an expert debate coach. The AI opponent just responded to your student's argument.
-Topic: "${config.topic}". Student's side: "${config.side}".
+        hintSystemPrompt = `You are a debate coach. Topic: "${config.topic}". Student argues: "${config.side}".
 
-Based on what the opponent just said, help the student prepare their next response:
+The opponent just responded. Give exactly 3 ultra-short bullet tips:
+• Weakness: One attackable point in opponent's response (1 line)
+• Counter: One specific counter-argument to use (1 line)
+• Say this: One power sentence to deliver (1 line)
 
-1. **Opponent's weak spot**: Identify the weakest or most attackable point in the opponent's latest response
-2. **Counter-argument**: Suggest a specific counter-argument with evidence or reasoning the student should use
-3. **New angle to introduce**: Suggest a fresh point or perspective the student hasn't raised yet
-4. **Recommended approach**: Should they rebut first then present new evidence, or lead with a strong claim? Give a specific strategy
-5. **Power phrase**: Give them one strong sentence to use (e.g., "Try saying: '[specific argument]'")
-
-Be specific to the ACTUAL conversation — reference exact claims made. No generic debate tips.
-Format with bullet points. Keep each point to 1-2 sentences.`;
+CRITICAL: Each bullet must be ONE short sentence max. No headers, no numbering, no explanations. Just 3 bullet points.`;
       }
 
       const hintMessages = [
