@@ -148,9 +148,6 @@ export default function Dashboard() {
       <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
             <div>
               <h1 className="text-2xl font-display font-bold gradient-text">Dashboard</h1>
               <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>
@@ -159,7 +156,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <ExportPortfolio debates={debates} userName={userName} />
-            <Button onClick={() => navigate("/")} className="bg-primary hover:bg-primary-hover shadow-md">
+            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md">
               <Sparkles className="w-4 h-4 mr-2" />
               New Debate
             </Button>
