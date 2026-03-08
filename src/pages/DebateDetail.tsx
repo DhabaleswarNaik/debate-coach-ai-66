@@ -52,7 +52,7 @@ export default function DebateDetail() {
     } catch (error) {
       console.error("Error fetching debate:", error);
       toast.error("Failed to load debate details");
-      navigate("/dashboard");
+      navigate("/");
     } finally {
       setLoading(false);
     }
