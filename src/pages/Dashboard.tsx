@@ -187,21 +187,21 @@ export default function Dashboard() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
             <LogoGlow size="sm" />
-            <div>
-              <h1 className="text-2xl font-display font-bold gradient-text">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-display font-bold gradient-text truncate">Dashboard</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">Welcome back, {userName}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <ThemeToggle />
-            <ExportPortfolio debates={debates} userName={userName} />
-            <Button onClick={() => navigate("/new-debate")} className="bg-primary hover:bg-primary-hover shadow-md btn-glow">
-              <Sparkles className="w-4 h-4 mr-2" />
-              New Debate
+            <span className="hidden sm:inline-flex"><ExportPortfolio debates={debates} userName={userName} /></span>
+            <Button onClick={() => navigate("/new-debate")} size="sm" className="bg-primary hover:bg-primary-hover shadow-md btn-glow">
+              <Sparkles className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">New Debate</span>
             </Button>
           </div>
         </div>
