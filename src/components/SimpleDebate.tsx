@@ -29,14 +29,17 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [currentUserText, setCurrentUserText] = useState("");
   const [debateStarted, setDebateStarted] = useState(false);
   const [liveRecordingTime, setLiveRecordingTime] = useState(0);
+  const [liveAITime, setLiveAITime] = useState(0);
   const [currentHint, setCurrentHint] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef(false);
   const userStartTimeRef = useRef<number | null>(null);
+  const aiStartTimeRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const accumulatedTextRef = useRef("");
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const aiTimerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep ref in sync with state
   useEffect(() => {
