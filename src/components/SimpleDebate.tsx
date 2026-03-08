@@ -528,27 +528,57 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Timer pills */}
-            <div className={`px-4 py-2 rounded-full text-xs font-mono font-bold transition-all duration-300 ${
+          <div className="flex items-center gap-2">
+            {/* User Timer */}
+            <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl transition-all duration-500 ${
               isRecording 
-                ? 'bg-destructive/15 border-2 border-destructive text-destructive shadow-lg shadow-destructive/20 glow-pulse' 
-                : 'bg-muted/50 border border-border/50 text-muted-foreground'
-            }`}>
-              🎤 {isRecording 
-                ? `${Math.floor(timeLog.userTotal) + liveRecordingTime}s`
-                : `${Math.floor(timeLog.userTotal)}s`
-              }
+                ? 'bg-gradient-to-r from-destructive/20 to-destructive/10 border-2 border-destructive shadow-lg' 
+                : 'bg-muted/30 border border-border/40'
+            }`}
+            style={isRecording ? { boxShadow: '0 0 25px hsl(var(--destructive) / 0.3)' } : {}}
+            >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                isRecording ? 'bg-destructive/20' : 'bg-muted/50'
+              }`}>
+                <Mic className={`w-4 h-4 transition-all duration-300 ${
+                  isRecording ? 'text-destructive animate-pulse' : 'text-muted-foreground'
+                }`} />
+              </div>
+              <div className="text-right">
+                <p className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground leading-none mb-0.5">You</p>
+                <p className={`text-lg font-mono font-black leading-none tabular-nums ${
+                  isRecording ? 'text-destructive' : 'text-foreground'
+                }`}>
+                  {formatTimer(isRecording ? Math.floor(timeLog.userTotal) + liveRecordingTime : Math.floor(timeLog.userTotal))}
+                </p>
+              </div>
+              {isRecording && <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />}
             </div>
-            <div className={`px-4 py-2 rounded-full text-xs font-mono font-bold transition-all duration-300 ${
+
+            {/* AI Timer */}
+            <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl transition-all duration-500 ${
               isAISpeaking 
-                ? 'bg-primary/15 border-2 border-primary text-primary shadow-lg shadow-primary/20 glow-pulse' 
-                : 'bg-muted/50 border border-border/50 text-muted-foreground'
-            }`}>
-              🤖 {isAISpeaking 
-                ? `${Math.floor(timeLog.aiTotal) + liveAITime}s`
-                : `${Math.floor(timeLog.aiTotal)}s`
-              }
+                ? 'bg-gradient-to-r from-primary/20 to-primary/10 border-2 border-primary shadow-lg' 
+                : 'bg-muted/30 border border-border/40'
+            }`}
+            style={isAISpeaking ? { boxShadow: '0 0 25px hsl(var(--primary) / 0.3)' } : {}}
+            >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                isAISpeaking ? 'bg-primary/20' : 'bg-muted/50'
+              }`}>
+                <Volume2 className={`w-4 h-4 transition-all duration-300 ${
+                  isAISpeaking ? 'text-primary animate-pulse' : 'text-muted-foreground'
+                }`} />
+              </div>
+              <div className="text-right">
+                <p className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground leading-none mb-0.5">AI</p>
+                <p className={`text-lg font-mono font-black leading-none tabular-nums ${
+                  isAISpeaking ? 'text-primary' : 'text-foreground'
+                }`}>
+                  {formatTimer(isAISpeaking ? Math.floor(timeLog.aiTotal) + liveAITime : Math.floor(timeLog.aiTotal))}
+                </p>
+              </div>
+              {isAISpeaking && <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />}
             </div>
 
             <Button 
