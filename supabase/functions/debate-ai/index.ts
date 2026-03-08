@@ -74,43 +74,59 @@ serve(async (req) => {
     } else if (action === "hint") {
       // Generate coaching hint for practice mode
       const hasUserSpoken = transcript.some((e: any) => e.speaker === "user");
+      const lastSpeaker = transcript.length > 0 ? transcript[transcript.length - 1].speaker : null;
       
-      const hintSystemPrompt = hasUserSpoken
-        ? `You are a supportive debate coach helping a student improve their argumentation skills.
+      let hintSystemPrompt: string;
+      let hintType: string;
 
-TOPIC: "${config.topic}"
-STUDENT'S SIDE: "${config.side}"
+      if (!hasUserSpoken) {
+        // After AI's opening — suggest what the student should say
+        hintType = "opening_guide";
+        hintSystemPrompt = `You are an expert debate coach. The AI opponent just gave their opening argument on the topic: "${config.topic}".
+The student is arguing: "${config.side}".
 
-Analyze the student's last argument and the AI opponent's response. Provide 2-3 short, actionable coaching tips to help them improve their next response. Focus on:
-- Whether they addressed the opponent's last point (if not, suggest how)
-- Whether their claim needs evidence — suggest specific types of evidence they could use
-- Rebuttal technique improvements — suggest a concrete counter-argument they could make
-- Argument structure suggestions — how to frame their next point more persuasively
-- Point out any logical weaknesses in the opponent's argument they can exploit
+Based on EXACTLY what the opponent just said, give the student a concrete game plan for their first response. Include:
 
-Be encouraging but specific. Format as 2-3 bullet points. Example:
-• "The opponent claimed X without evidence — challenge them to prove it."
-• "Strengthen your point by citing a real-world example of Y."
-• "Try acknowledging their point first, then explain why it doesn't apply here."
+1. **What to say first**: A specific opening line or approach to grab attention (e.g., "Start by saying: '[example sentence]'")
+2. **Key weakness to attack**: Identify the weakest point in the opponent's argument and explain exactly how to challenge it
+3. **Your strongest angle**: Suggest the most powerful argument for the student's side with a specific example or evidence they should mention
+4. **Recommended approach**: Should they be aggressive, measured, question-based, or evidence-heavy? Why?
 
-Return ONLY the coaching tips, nothing else.`
-        : `You are a supportive debate coach helping a student prepare for their first response in a debate.
+Be specific to what the opponent actually said — don't give generic advice. Use the opponent's exact claims to craft targeted suggestions.
+Format with bullet points. Keep each point to 1-2 sentences.`;
+      } else if (lastSpeaker === "user" || userMessage) {
+        // After user spoke — give corrections, enhancements, additional points
+        hintType = "post_speech_review";
+        hintSystemPrompt = `You are an expert debate coach reviewing a student's argument in real-time. 
+Topic: "${config.topic}". Student's side: "${config.side}".
 
-TOPIC: "${config.topic}"
-STUDENT'S SIDE: "${config.side}"
+The student just finished speaking. Analyze what they said and the opponent's previous points. Provide:
 
-The AI opponent just gave their opening argument. Help the student craft a strong first response. Provide 2-3 short, actionable tips. Focus on:
-- Key weaknesses in the opponent's opening they should target
-- What kind of evidence or examples would strengthen their position
-- How to structure their opening rebuttal effectively
-- Specific points or angles they should raise for their side
+1. **What you did well**: Briefly acknowledge one strength (be specific, not generic)
+2. **Corrections needed**: If they made any logical errors, factual mistakes, or weak arguments, point them out and explain how to fix them
+3. **Missing points**: What important arguments or evidence did they forget to mention? Suggest 1-2 specific additional points they should raise next
+4. **Next move**: Based on what the opponent is likely to say next, suggest what approach and talking points to prepare
+5. **Power phrase**: Give them one strong sentence they can use in their next turn (e.g., "Try saying: '[specific rebuttal]'")
 
-Be encouraging and specific. Format as 2-3 bullet points. Example:
-• "Start by challenging their main claim — ask what evidence supports it."
-• "Bring up [specific angle] as a strong counter-example for your side."
-• "Set the tone by stating your strongest point clearly and confidently."
+Be honest but encouraging. Reference their ACTUAL words and the opponent's ACTUAL claims — no generic advice.
+Format with bullet points. Keep each point to 1-2 sentences.`;
+      } else {
+        // After AI responded to user — suggest what to say next
+        hintType = "response_guide";
+        hintSystemPrompt = `You are an expert debate coach. The AI opponent just responded to your student's argument.
+Topic: "${config.topic}". Student's side: "${config.side}".
 
-Return ONLY the coaching tips, nothing else.`;
+Based on what the opponent just said, help the student prepare their next response:
+
+1. **Opponent's weak spot**: Identify the weakest or most attackable point in the opponent's latest response
+2. **Counter-argument**: Suggest a specific counter-argument with evidence or reasoning the student should use
+3. **New angle to introduce**: Suggest a fresh point or perspective the student hasn't raised yet
+4. **Recommended approach**: Should they rebut first then present new evidence, or lead with a strong claim? Give a specific strategy
+5. **Power phrase**: Give them one strong sentence to use (e.g., "Try saying: '[specific argument]'")
+
+Be specific to the ACTUAL conversation — reference exact claims made. No generic debate tips.
+Format with bullet points. Keep each point to 1-2 sentences.`;
+      }
 
       const hintMessages = [
         { role: "system", content: hintSystemPrompt },
@@ -142,7 +158,7 @@ Return ONLY the coaching tips, nothing else.`;
       const data = await response.json();
       const hint = data.choices[0].message.content;
 
-      return new Response(JSON.stringify({ hint }), {
+      return new Response(JSON.stringify({ hint, hintType }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else if (action === "evaluate") {

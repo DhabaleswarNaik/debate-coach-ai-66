@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb } from "lucide-react";
+import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb, MessageSquare, CheckCircle } from "lucide-react";
 import { DebateConfig } from "./DebateSetup";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +31,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [liveRecordingTime, setLiveRecordingTime] = useState(0);
   const [liveAITime, setLiveAITime] = useState(0);
   const [currentHint, setCurrentHint] = useState<string | null>(null);
+  const [hintType, setHintType] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef(false);
@@ -272,7 +273,10 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
               userMessage: userText
             }
           }).then(({ data: hintData }) => {
-            if (hintData?.hint) setCurrentHint(hintData.hint);
+            if (hintData?.hint) {
+              setCurrentHint(hintData.hint);
+              setHintType(hintData.hintType || "response_guide");
+            }
           }).catch(e => console.error("Error fetching hint:", e))
         : Promise.resolve();
 
@@ -331,7 +335,10 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
               userMessage: ""
             }
           }).then(({ data: hintData }) => {
-            if (hintData?.hint) setCurrentHint(hintData.hint);
+            if (hintData?.hint) {
+              setCurrentHint(hintData.hint);
+              setHintType(hintData.hintType || "opening_guide");
+            }
           }).catch(e => console.error("Error fetching opening hint:", e))
         : Promise.resolve();
 
@@ -410,6 +417,30 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
     const userText = accumulatedTextRef.current.trim() || currentUserText.trim();
     
     if (userText) {
+      // In practice mode, show immediate review of user's speech first
+      if (config.practiceMode) {
+        setCurrentHint(null);
+        setHintType("post_speech_review");
+        // Fire review hint (don't await — it shows while AI is thinking)
+        supabase.functions.invoke('debate-ai', {
+          body: {
+            action: "hint",
+            config: {
+              topic: config.topic,
+              difficulty: config.difficulty,
+              side: config.side,
+              language: config.language
+            },
+            transcript: [...transcript, { speaker: "user", text: userText, timestamp: Date.now() }],
+            userMessage: userText
+          }
+        }).then(({ data: hintData }) => {
+          if (hintData?.hint) {
+            setCurrentHint(hintData.hint);
+            setHintType(hintData.hintType || "post_speech_review");
+          }
+        }).catch(e => console.error("Error fetching review hint:", e));
+      }
       await getAIResponse(userText);
     } else {
       toast.info(config.language === "hi" ? "कोई भाषण नहीं मिला" : "No speech detected. Please try speaking louder.");
@@ -581,14 +612,36 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
 
         {/* Practice Mode Hint */}
         {currentHint && (
-          <Card className="p-4 border-2 border-accent/30 bg-accent/5">
+          <Card className={`p-4 border-2 ${
+            hintType === "post_speech_review" 
+              ? "border-primary/30 bg-primary/5" 
+              : "border-accent/30 bg-accent/5"
+          }`}>
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5">
-                <Lightbulb className="w-4 h-4 text-accent" />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                hintType === "post_speech_review" ? "bg-primary/10" : "bg-accent/10"
+              }`}>
+                {hintType === "post_speech_review" ? (
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                ) : hintType === "opening_guide" ? (
+                  <MessageSquare className="w-4 h-4 text-accent" />
+                ) : (
+                  <Lightbulb className="w-4 h-4 text-accent" />
+                )}
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent mb-1">Coaching Hint</p>
-                <p className="text-sm text-foreground">{currentHint}</p>
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${
+                  hintType === "post_speech_review" ? "text-primary" : "text-accent"
+                }`}>
+                  {hintType === "post_speech_review" 
+                    ? "📝 Review & Next Steps" 
+                    : hintType === "opening_guide" 
+                      ? "🎯 How to Respond" 
+                      : "💡 Suggested Approach"}
+                </p>
+                <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">
+                  {currentHint}
+                </div>
               </div>
             </div>
           </Card>
