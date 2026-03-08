@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Sparkles, ArrowRight, Eye, EyeOff } from "lucide-react";
-import logo from "@/assets/logo.png";
+import { LogoGlow } from "@/components/LogoGlow";
 
 const Auth = () => {
   const [email, setEmail] = useState("");

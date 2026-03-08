@@ -153,23 +153,25 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1;
+    @apply transition-all duration-300 hover:-translate-y-1.5 cursor-pointer;
     &:hover {
       box-shadow: var(--shadow-md), 0 0 20px hsl(var(--primary) / 0.15);
     }
   }
 
   .hover-glow {
-    @apply transition-all duration-300;
+    @apply transition-all duration-500;
     &:hover {
-      box-shadow: 0 0 25px hsl(var(--primary) / 0.3), 0 0 50px hsl(var(--primary) / 0.1);
+      box-shadow: 0 0 30px hsl(var(--primary) / 0.35), 0 0 60px hsl(var(--primary) / 0.12);
+      border-color: hsl(var(--primary) / 0.4);
     }
   }
 
   .hover-glow-accent {
-    @apply transition-all duration-300;
+    @apply transition-all duration-500;
     &:hover {
-      box-shadow: 0 0 25px hsl(var(--accent) / 0.3), 0 0 50px hsl(var(--accent) / 0.1);
+      box-shadow: 0 0 30px hsl(var(--accent) / 0.35), 0 0 60px hsl(var(--accent) / 0.12);
+      border-color: hsl(var(--accent) / 0.4);
     }
   }
 
@@ -181,16 +183,29 @@
     }
   }
 
+  .hover-scale-card {
+    @apply transition-all duration-300;
+    &:hover {
+      @apply -translate-y-1;
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: var(--shadow-lg), 0 0 30px hsl(var(--primary) / 0.15);
+      border-color: hsl(var(--primary) / 0.3);
+    }
+  }
+
   .score-badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
   }
 
   .metric-card {
-    @apply p-5 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 shadow-sm transition-all duration-300;
+    @apply p-5 rounded-xl bg-gradient-to-br from-card to-muted/30 border border-border/50 shadow-sm transition-all duration-300 cursor-pointer;
     &:hover {
-      @apply -translate-y-1;
-      box-shadow: var(--shadow-md), 0 0 30px hsl(var(--primary) / 0.12);
-      border-color: hsl(var(--primary) / 0.3);
+      @apply -translate-y-2;
+      box-shadow: var(--shadow-lg), 0 0 35px hsl(var(--primary) / 0.15);
+      border-color: hsl(var(--primary) / 0.4);
+      & .metric-icon {
+        @apply scale-110;
+      }
     }
   }
 
@@ -214,10 +229,18 @@
     @apply transition-all duration-300;
     &:hover {
       box-shadow: 0 0 20px hsl(var(--primary) / 0.4), 0 4px 15px hsl(var(--primary) / 0.2);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
     &:active {
       transform: translateY(0);
+    }
+  }
+
+  .section-hover {
+    @apply transition-all duration-500 rounded-2xl;
+    &:hover {
+      background: hsl(var(--primary) / 0.02);
+      box-shadow: inset 0 0 30px hsl(var(--primary) / 0.03), 0 0 20px hsl(var(--primary) / 0.05);
     }
   }
 }

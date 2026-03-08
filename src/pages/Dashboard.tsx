@@ -169,12 +169,19 @@ export default function Dashboard() {
   
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden">
+      {/* Animated background orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
       {/* Header */}
       <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <img src={logo} alt="Logo" className="w-10 h-10 object-contain hover:scale-110 transition-transform duration-300" />
+            <LogoGlow size="sm" />
             <div>
               <h1 className="text-2xl font-display font-bold gradient-text">Dashboard</h1>
               <p className="text-sm text-muted-foreground">Welcome back, {userName}</p>
@@ -191,18 +198,18 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 py-8 space-y-8 relative">
         {/* User Profile Card */}
-        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative hover-glow card-shine">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full" />
+        <Card className="p-6 glass-card animate-fade-up overflow-hidden relative hover-glow hover-scale-card card-shine group">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full transition-all duration-500 group-hover:from-primary/10" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
-            <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg">
+            <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-primary/20 group-hover:scale-105">
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
                 {userInitials}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-2">
-              <h2 className="text-2xl font-display font-bold">{userName}</h2>
+              <h2 className="text-2xl font-display font-bold transition-colors duration-300 group-hover:text-primary">{userName}</h2>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4" />
                 <span>{userEmail}</span>
@@ -214,25 +221,25 @@ export default function Dashboard() {
                 </div>
               )}
               <div className="flex flex-wrap gap-2 pt-1">
-                <Badge variant="secondary" className="gap-1">
+                <Badge variant="secondary" className="gap-1 transition-all duration-300 hover:scale-105 hover:shadow-md cursor-default">
                   <Target className="w-3 h-3" />
                   {debates.length} debate{debates.length !== 1 ? 's' : ''}
                 </Badge>
                 {streak > 0 && (
-                  <Badge variant="secondary" className="gap-1">
+                  <Badge variant="secondary" className="gap-1 transition-all duration-300 hover:scale-105 hover:shadow-md cursor-default">
                     <TrendingUp className="w-3 h-3" />
                     {streak} win streak
                   </Badge>
                 )}
                 {topDifficulty && (
-                  <Badge variant="secondary" className="gap-1 capitalize">
+                  <Badge variant="secondary" className="gap-1 capitalize transition-all duration-300 hover:scale-105 hover:shadow-md cursor-default">
                     <Award className="w-3 h-3" />
                     {topDifficulty} level
                   </Badge>
                 )}
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0">
+            <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
               <LogOut className="w-4 h-4 mr-2" />
               Log out
             </Button>
@@ -240,9 +247,9 @@ export default function Dashboard() {
         </Card>
 
         {debates.length === 0 ? (
-          <Card className="p-16 text-center glass-card animate-fade-up">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-              <Trophy className="w-10 h-10 text-primary" />
+          <Card className="p-16 text-center glass-card animate-fade-up hover-glow group">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/20">
+              <Trophy className="w-10 h-10 text-primary transition-transform duration-500 group-hover:rotate-12" />
             </div>
             <h2 className="text-2xl font-display font-bold mb-3">No debates yet</h2>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
@@ -256,91 +263,60 @@ export default function Dashboard() {
         ) : (
           <>
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 animate-fade-up">
-              <Card className="metric-card hover-lift">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md">
-                    <Target className="w-6 h-6 text-primary-foreground" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 animate-fade-up section-hover p-2 -m-2">
+              {[
+                { icon: Target, label: "Debates", value: debates.length, gradient: "from-primary to-primary/60", color: "" },
+                { icon: TrendingUp, label: "Avg Score", value: avgScore ?? '—', gradient: "from-accent to-accent/60", color: avgScore ? getScoreColor(avgScore) : '' },
+                { icon: Award, label: "Best Score", value: bestScore ?? '—', gradient: "from-secondary to-secondary/60", color: bestScore ? getScoreColor(bestScore) : '' },
+                { icon: BarChart3, label: "Win Streak", value: streak, gradient: "from-primary/80 to-accent/60", color: "" },
+              ].map((stat, i) => (
+                <Card key={stat.label} className="metric-card group" style={{ animationDelay: `${0.05 * i}s` }}>
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:rotate-3`}>
+                      <stat.icon className="w-6 h-6 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{stat.label}</p>
+                      <p className={`text-2xl font-display font-bold ${stat.color}`}>
+                        {stat.value}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Debates</p>
-                    <p className="text-2xl font-display font-bold">{debates.length}</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="metric-card hover-lift">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/60 flex items-center justify-center shadow-md">
-                    <TrendingUp className="w-6 h-6 text-accent-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Avg Score</p>
-                    <p className={`text-2xl font-display font-bold ${avgScore ? getScoreColor(avgScore) : ''}`}>
-                      {avgScore ?? '—'}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="metric-card hover-lift">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center shadow-md">
-                    <Award className="w-6 h-6 text-secondary-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Best Score</p>
-                    <p className={`text-2xl font-display font-bold ${bestScore ? getScoreColor(bestScore) : ''}`}>
-                      {bestScore ?? '—'}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="metric-card hover-lift">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/80 to-accent/60 flex items-center justify-center shadow-md">
-                    <BarChart3 className="w-6 h-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Win Streak</p>
-                    <p className="text-2xl font-display font-bold">{streak}</p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              ))}
             </div>
 
             {/* Skill Badges */}
-            <div className="animate-fade-up" style={{ animationDelay: '0.1s' }}>
+            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.1s' }}>
               <SkillBadges debates={debates} />
             </div>
 
             {/* Charts */}
-            <div className="animate-fade-up" style={{ animationDelay: '0.2s' }}>
+            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.2s' }}>
               <PerformanceCharts debates={debates} />
             </div>
             
             {/* Debate History */}
-            <div className="animate-fade-up" style={{ animationDelay: '0.2s' }}>
-              <div className="flex items-center justify-between mb-6">
+            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.2s' }}>
+              <div className="flex items-center justify-between mb-6 px-2">
                 <h2 className="text-xl font-display font-bold">Debate History</h2>
                 <Badge variant="outline" className="font-medium">{debates.length} debates</Badge>
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-4 px-2">
                 {debates.map((debate, index) => (
                   <Card 
                     key={debate.id} 
-                    className="p-6 glass-card hover-lift hover-border-glow card-shine cursor-pointer transition-all duration-300"
+                    className="p-6 glass-card hover-scale-card hover-border-glow card-shine cursor-pointer transition-all duration-300 group"
                     onClick={() => navigate(`/debate/${debate.id}`)}
                     style={{ animationDelay: `${0.05 * index}s` }}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 space-y-3">
                         <div>
-                          <h3 className="text-lg font-semibold mb-2 line-clamp-1">{debate.topic}</h3>
+                          <h3 className="text-lg font-semibold mb-2 line-clamp-1 transition-colors duration-300 group-hover:text-primary">{debate.topic}</h3>
                           <div className="flex flex-wrap gap-2">
-                            <Badge variant="outline" className="capitalize">{debate.difficulty}</Badge>
-                            <Badge variant="outline" className="capitalize">{debate.side}</Badge>
+                            <Badge variant="outline" className="capitalize transition-all duration-300 group-hover:border-primary/40">{debate.difficulty}</Badge>
+                            <Badge variant="outline" className="capitalize transition-all duration-300 group-hover:border-primary/40">{debate.side}</Badge>
                             {debate.practice_mode && (
                               <Badge className="bg-accent/15 text-accent border border-accent/30 gap-1">
                                 <GraduationCap className="w-3 h-3" />
@@ -353,7 +329,7 @@ export default function Dashboard() {
                         {debate.scores && debate.scores.final_score !== undefined && (
                           <div className="pt-3 border-t border-border/50">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-accent/20">
                                 <Trophy className="w-5 h-5 text-accent" />
                               </div>
                               <div>
