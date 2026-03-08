@@ -307,8 +307,8 @@ export default function EditProfile() {
         </Card>
 
         {/* Password Section */}
-        <Card className="p-6 glass-card animate-fade-up" style={{ animationDelay: "0.15s" }}>
-          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up" style={{ animationDelay: "0.15s" }}>
+          <h2 className="text-base sm:text-lg font-display font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             <Lock className="w-5 h-5 text-primary" />
             Password
           </h2>
