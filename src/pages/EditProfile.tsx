@@ -276,8 +276,8 @@ export default function EditProfile() {
         </Card>
 
         {/* Email Section */}
-        <Card className="p-6 glass-card animate-fade-up" style={{ animationDelay: "0.1s" }}>
-          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <h2 className="text-base sm:text-lg font-display font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             <Mail className="w-5 h-5 text-primary" />
             Email Address
           </h2>
