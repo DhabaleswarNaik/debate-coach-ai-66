@@ -55,34 +55,34 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-muted/30 overflow-hidden">
+    <div className="h-screen flex items-center justify-center p-3 bg-gradient-to-br from-background via-background to-muted/30 overflow-hidden">
       {/* Animated background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-32 -right-32 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-primary/8 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-accent/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
 
-      <Card className="w-full max-w-3xl p-6 glass-card shadow-lg relative animate-fade-up hover-glow card-shine">
-        {/* Header — compact */}
-        <div className="flex items-center gap-4 mb-5">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/25 glow-pulse shrink-0">
-            <MessageSquare className="w-6 h-6 text-primary-foreground" />
+      <Card className="w-full max-w-5xl p-8 glass-card shadow-2xl relative animate-fade-up border-border/30">
+        {/* Header */}
+        <div className="flex items-center gap-5 mb-8">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/25 glow-pulse shrink-0">
+            <MessageSquare className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-2xl font-display font-bold gradient-text">AI Debate Partner</h1>
-            <p className="text-sm text-muted-foreground">Sharpen your argumentation skills</p>
+            <h1 className="text-3xl font-display font-bold gradient-text">AI Debate Partner</h1>
+            <p className="text-muted-foreground">Sharpen your argumentation skills with intelligent AI opposition</p>
           </div>
         </div>
 
-        {/* Two-column layout */}
-        <div className="grid md:grid-cols-2 gap-4 mb-4">
-          {/* Left column */}
-          <div className="space-y-4">
+        {/* Three-column layout */}
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          {/* Column 1 */}
+          <div className="space-y-5">
             {/* Language */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Language / भाषा</Label>
-              <div className="flex gap-2">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Language / भाषा</Label>
+              <div className="flex gap-3">
                 {[
                   { value: "en", label: "English", flag: "🇬🇧" },
                   { value: "hi", label: "हिंदी", flag: "🇮🇳" }
@@ -90,29 +90,30 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
                   <button
                     key={lang.value}
                     onClick={() => setLanguage(lang.value as "en" | "hi")}
-                    className={`flex-1 p-3 rounded-xl border-2 transition-all duration-300 flex items-center justify-center gap-2 ${
+                    className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 flex items-center justify-center gap-2.5 group ${
                       language === lang.value
-                        ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
-                        : 'border-border hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 bg-card'
+                        ? 'border-primary bg-primary/10 shadow-lg shadow-primary/15'
+                        : 'border-border/60 bg-card/50 hover:border-primary/40 hover:bg-primary/5'
                     }`}
+                    style={language === lang.value ? { boxShadow: '0 0 20px hsl(var(--primary) / 0.2), 0 4px 12px hsl(var(--primary) / 0.1)' } : {}}
                   >
-                    <span className="text-lg">{lang.flag}</span>
-                    <span className="font-medium text-sm">{lang.label}</span>
+                    <span className="text-xl transition-transform duration-300 group-hover:scale-110">{lang.flag}</span>
+                    <span className="font-semibold text-sm">{lang.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Topic */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Select Topic</Label>
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Select Topic</Label>
               <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                <SelectTrigger className="w-full h-11 text-sm bg-card border-2 border-border hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 transition-all duration-300">
+                <SelectTrigger className="w-full h-12 text-sm bg-card/50 border-2 border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 transition-all duration-300 rounded-xl">
                   <SelectValue placeholder="Choose a debate topic..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg">
+                <SelectContent className="bg-popover border border-border shadow-xl rounded-xl">
                   {DEBATE_TOPICS.map((topic) => (
-                    <SelectItem key={topic.id} value={topic.id} className="py-2.5 cursor-pointer">
+                    <SelectItem key={topic.id} value={topic.id} className="py-3 cursor-pointer rounded-lg">
                       <div>
                         <div className="font-medium text-sm">{topic.en}</div>
                         <div className="text-xs text-muted-foreground">{topic.hi}</div>
@@ -124,105 +125,162 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
             </div>
 
             {/* Difficulty */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Difficulty</Label>
-              <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Difficulty</Label>
+              <div className="grid grid-cols-3 gap-2.5">
                 {DIFFICULTY_CONFIG.map((diff) => {
                   const Icon = diff.icon;
+                  const isSelected = difficulty === diff.value;
                   return (
                     <button
                       key={diff.value}
                       onClick={() => setDifficulty(diff.value as any)}
-                      className={`p-2.5 rounded-xl border-2 transition-all duration-300 text-center group ${
-                        difficulty === diff.value
-                          ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
-                          : 'border-border hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 bg-card'
+                      className={`p-3.5 rounded-xl border-2 transition-all duration-300 text-center group ${
+                        isSelected
+                          ? 'border-primary bg-primary/10 shadow-lg shadow-primary/15'
+                          : 'border-border/60 bg-card/50 hover:border-primary/40 hover:bg-primary/5'
                       }`}
+                      style={isSelected ? { boxShadow: '0 0 20px hsl(var(--primary) / 0.2), 0 4px 12px hsl(var(--primary) / 0.1)' } : {}}
                     >
-                      <Icon className={`w-5 h-5 mx-auto mb-1 transition-transform duration-300 group-hover:scale-110 ${diff.color}`} />
-                      <div className="font-semibold text-xs">{diff.label}</div>
+                      <Icon className={`w-6 h-6 mx-auto mb-1.5 transition-all duration-300 group-hover:scale-125 group-hover:drop-shadow-lg ${diff.color}`} />
+                      <div className="font-semibold text-sm">{diff.label}</div>
                     </button>
                   );
                 })}
               </div>
-              <p className="text-[11px] text-muted-foreground text-center">
+              <p className="text-[11px] text-muted-foreground text-center italic">
                 {DIFFICULTY_CONFIG.find(d => d.value === difficulty)?.description}
               </p>
             </div>
           </div>
 
-          {/* Right column */}
-          <div className="space-y-4">
+          {/* Column 2 */}
+          <div className="space-y-5">
             {/* Side */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Your Position</Label>
-              <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Your Position</Label>
+              <div className="space-y-2.5">
                 <button
                   onClick={() => setSide("proposition")}
-                  className={`p-3 rounded-xl border-2 transition-all duration-300 text-left group ${
+                  className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left group ${
                     side === "proposition"
-                      ? 'border-accent bg-accent/5 shadow-md shadow-accent/10'
-                      : 'border-border hover:border-accent/50 hover:shadow-md hover:shadow-accent/5 bg-card'
+                      ? 'border-accent bg-accent/10 shadow-lg shadow-accent/15'
+                      : 'border-border/60 bg-card/50 hover:border-accent/40 hover:bg-accent/5'
                   }`}
+                  style={side === "proposition" ? { boxShadow: '0 0 20px hsl(var(--accent) / 0.25), 0 4px 12px hsl(var(--accent) / 0.1)' } : {}}
                 >
-                  <div className="font-semibold text-accent text-sm mb-0.5 transition-transform duration-300 group-hover:translate-x-0.5">Argue Against</div>
-                  <div className="text-[11px] text-muted-foreground">AI argues FOR</div>
+                  <div className="font-bold text-accent text-base mb-1 transition-transform duration-300 group-hover:translate-x-1">⚔️ Argue Against</div>
+                  <div className="text-xs text-muted-foreground">You oppose the motion — AI argues FOR it</div>
                 </button>
                 <button
                   onClick={() => setSide("opposition")}
-                  className={`p-3 rounded-xl border-2 transition-all duration-300 text-left group ${
+                  className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left group ${
                     side === "opposition"
-                      ? 'border-secondary bg-secondary/5 shadow-md shadow-secondary/10'
-                      : 'border-border hover:border-secondary/50 hover:shadow-md hover:shadow-secondary/5 bg-card'
+                      ? 'border-secondary bg-secondary/10 shadow-lg shadow-secondary/15'
+                      : 'border-border/60 bg-card/50 hover:border-secondary/40 hover:bg-secondary/5'
                   }`}
+                  style={side === "opposition" ? { boxShadow: '0 0 20px hsl(var(--secondary) / 0.25), 0 4px 12px hsl(var(--secondary) / 0.1)' } : {}}
                 >
-                  <div className="font-semibold text-secondary text-sm mb-0.5 transition-transform duration-300 group-hover:translate-x-0.5">Argue For</div>
-                  <div className="text-[11px] text-muted-foreground">AI argues AGAINST</div>
+                  <div className="font-bold text-secondary text-base mb-1 transition-transform duration-300 group-hover:translate-x-1">🛡️ Argue For</div>
+                  <div className="text-xs text-muted-foreground">You support the motion — AI argues AGAINST it</div>
                 </button>
               </div>
             </div>
 
             {/* Practice Mode */}
-            <div className="flex items-center justify-between p-3 rounded-xl border-2 border-border bg-card hover:border-accent/40 hover:shadow-md hover:shadow-accent/5 transition-all duration-300 group">
+            <div
+              className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 group cursor-pointer ${
+                practiceMode
+                  ? 'border-accent bg-accent/10 shadow-lg shadow-accent/15'
+                  : 'border-border/60 bg-card/50 hover:border-accent/40 hover:bg-accent/5'
+              }`}
+              style={practiceMode ? { boxShadow: '0 0 20px hsl(var(--accent) / 0.2), 0 4px 12px hsl(var(--accent) / 0.1)' } : {}}
+              onClick={() => setPracticeMode(!practiceMode)}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent/20 group-hover:shadow-sm group-hover:shadow-accent/20">
-                  <GraduationCap className="w-4 h-4 text-accent transition-transform duration-300 group-hover:scale-110" />
+                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent/20 group-hover:scale-105 group-hover:shadow-md group-hover:shadow-accent/20">
+                  <GraduationCap className="w-5 h-5 text-accent transition-transform duration-300 group-hover:scale-110" />
                 </div>
                 <div>
-                  <Label htmlFor="practice-mode" className="font-semibold text-sm cursor-pointer">Practice Mode</Label>
-                  <p className="text-[11px] text-muted-foreground">Real-time coaching hints</p>
+                  <Label className="font-bold text-sm cursor-pointer">Practice Mode</Label>
+                  <p className="text-xs text-muted-foreground">Real-time coaching hints</p>
                 </div>
               </div>
               <Switch
                 id="practice-mode"
                 checked={practiceMode}
                 onCheckedChange={setPracticeMode}
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
+          </div>
 
-            {/* Quick stats / info panel */}
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border border-border/50 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">What to expect</p>
-              <ul className="space-y-1.5 text-xs text-muted-foreground">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  AI presents opening argument first
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  Speak your rebuttal using the mic
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
-                  Get scored on logic, evidence & delivery
-                </li>
+          {/* Column 3 — Info & Preview */}
+          <div className="space-y-5">
+            {/* What to expect */}
+            <div className="p-5 rounded-xl bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 border border-border/30 space-y-3 h-full">
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">How it works</p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 group">
+                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 group-hover:bg-primary/20 group-hover:shadow-md group-hover:shadow-primary/20 group-hover:scale-105">
+                    <span className="text-xs font-bold text-primary">1</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">AI Opens</p>
+                    <p className="text-xs text-muted-foreground">AI presents its opening argument first</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 group-hover:bg-accent/20 group-hover:shadow-md group-hover:shadow-accent/20 group-hover:scale-105">
+                    <span className="text-xs font-bold text-accent">2</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">You Rebut</p>
+                    <p className="text-xs text-muted-foreground">Speak your counter-argument using the mic</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <div className="w-7 h-7 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-300 group-hover:bg-secondary/20 group-hover:shadow-md group-hover:shadow-secondary/20 group-hover:scale-105">
+                    <span className="text-xs font-bold text-secondary">3</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Get Scored</p>
+                    <p className="text-xs text-muted-foreground">AI evaluates logic, evidence & delivery</p>
+                  </div>
+                </div>
                 {practiceMode && (
-                  <li className="flex items-center gap-2 text-accent font-medium">
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                    Coaching hints enabled
-                  </li>
+                  <div className="flex items-start gap-3 pt-2 border-t border-border/30 animate-fade-in group">
+                    <div className="w-7 h-7 rounded-lg bg-accent/15 flex items-center justify-center shrink-0 mt-0.5 glow-pulse transition-all duration-300 group-hover:scale-105">
+                      <span className="text-xs">💡</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-accent">Coaching Active</p>
+                      <p className="text-xs text-muted-foreground">You'll get real-time tips after each turn</p>
+                    </div>
+                  </div>
                 )}
-              </ul>
+              </div>
+
+              {/* Selected config summary */}
+              {selectedTopic && (
+                <div className="mt-4 pt-3 border-t border-border/30 animate-fade-in">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Your Setup</p>
+                  <div className="space-y-1.5 text-xs">
+                    <p className="text-foreground truncate">
+                      <span className="text-muted-foreground">Topic:</span>{" "}
+                      {DEBATE_TOPICS.find(t => t.id === selectedTopic)?.[language]}
+                    </p>
+                    <p className="text-foreground">
+                      <span className="text-muted-foreground">Difficulty:</span>{" "}
+                      <span className="capitalize">{difficulty}</span>
+                    </p>
+                    <p className="text-foreground">
+                      <span className="text-muted-foreground">Position:</span>{" "}
+                      {side === "proposition" ? "Against the motion" : "For the motion"}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -231,7 +289,7 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
         <Button
           onClick={handleStart}
           disabled={!selectedTopic}
-          className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary-hover hover:to-primary shadow-lg shadow-primary/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed btn-glow"
+          className="w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-primary/80 hover:from-primary-hover hover:to-primary shadow-xl shadow-primary/20 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed btn-glow rounded-xl"
           size="lg"
         >
           <Sparkles className="w-5 h-5 mr-2" />
