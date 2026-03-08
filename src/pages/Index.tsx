@@ -80,7 +80,7 @@ const Index = () => {
           <ThemeToggle />
           <Button 
             variant="outline" 
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/")}}
             className="glass-card shadow-sm hover:shadow-md transition-all"
           >
             <LayoutDashboard className="w-4 h-4 mr-2" />

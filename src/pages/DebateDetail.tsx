@@ -240,7 +240,7 @@ export default function DebateDetail() {
                 <RefreshCw className={`w-4 h-4 mr-2 ${reanalyzing ? 'animate-spin' : ''}`} />
                 {reanalyzing ? 'Analyzing...' : 'Analyze Debate'}
               </Button>
-              <Button variant="outline" onClick={() => navigate("/")}>Start New Debate</Button>
+              <Button variant="outline" onClick={() => navigate("/new-debate")}>Start New Debate</Button>
             </div>
           </Card>
         )}
