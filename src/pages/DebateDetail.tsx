@@ -52,7 +52,7 @@ export default function DebateDetail() {
     } catch (error) {
       console.error("Error fetching debate:", error);
       toast.error("Failed to load debate details");
-      navigate("/dashboard");
+      navigate("/");
     } finally {
       setLoading(false);
     }
@@ -194,7 +194,7 @@ export default function DebateDetail() {
       {/* Header */}
       <header className="sticky top-0 z-50 glass-card border-b border-border/50 px-4 py-4">
         <div className="max-w-6xl mx-auto flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex-1">
@@ -240,7 +240,7 @@ export default function DebateDetail() {
                 <RefreshCw className={`w-4 h-4 mr-2 ${reanalyzing ? 'animate-spin' : ''}`} />
                 {reanalyzing ? 'Analyzing...' : 'Analyze Debate'}
               </Button>
-              <Button variant="outline" onClick={() => navigate("/")}>Start New Debate</Button>
+              <Button variant="outline" onClick={() => navigate("/new-debate")}>Start New Debate</Button>
             </div>
           </Card>
         )}
