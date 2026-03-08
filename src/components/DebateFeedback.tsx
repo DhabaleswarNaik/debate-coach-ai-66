@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DebateConfig } from "./DebateSetup";
-import { Trophy, TrendingUp, Target, Lightbulb } from "lucide-react";
+import { Trophy, TrendingUp, Target, Lightbulb, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface DebateFeedbackProps {
