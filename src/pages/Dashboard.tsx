@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Trophy, Calendar, TrendingUp, Target, Award, Sparkles, Mail, LogOut, BarChart3, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [userCreatedAt, setUserCreatedAt] = useState<string | undefined>();
   const [userName, setUserName] = useState<string>("User");
   const [userInitials, setUserInitials] = useState<string>("U");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const extractUsername = (email?: string) => {
@@ -69,19 +70,25 @@ export default function Dashboard() {
       // Fetch profile for name
       const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name, last_name")
+        .select("first_name, last_name, avatar_url")
         .eq("id", user.id)
         .single();
 
-      if (profile?.first_name) {
-        const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
-        setUserName(fullName);
-        const initials = [profile.first_name, profile.last_name]
-          .filter(Boolean)
-          .map(n => n[0])
-          .join("")
-          .toUpperCase();
-        setUserInitials(initials || "U");
+      if (profile) {
+        setAvatarUrl(profile.avatar_url || null);
+        if (profile.first_name) {
+          const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
+          setUserName(fullName);
+          const initials = [profile.first_name, profile.last_name]
+            .filter(Boolean)
+            .map(n => n[0])
+            .join("")
+            .toUpperCase();
+          setUserInitials(initials || "U");
+        } else {
+          setUserName(extractUsername(user.email));
+          setUserInitials(getInitials(user.email));
+        }
       } else {
         setUserName(extractUsername(user.email));
         setUserInitials(getInitials(user.email));
@@ -206,6 +213,7 @@ export default function Dashboard() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full transition-all duration-500 group-hover:from-primary/10" />
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative">
             <Avatar className="w-20 h-20 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-primary/20 group-hover:scale-105">
+              <AvatarImage src={avatarUrl || undefined} alt={userName} />
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground text-2xl font-display font-bold">
                 {userInitials}
               </AvatarFallback>
@@ -241,10 +249,16 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="shrink-0 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
-              <LogOut className="w-4 h-4 mr-2" />
-              Log out
-            </Button>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="outline" size="sm" onClick={() => navigate("/edit-profile")} className="hover:border-primary/40 transition-all duration-300">
+                <Target className="w-4 h-4 mr-2" />
+                Edit Profile
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all duration-300">
+                <LogOut className="w-4 h-4 mr-2" />
+                Log out
+              </Button>
+            </div>
           </div>
         </Card>
 
