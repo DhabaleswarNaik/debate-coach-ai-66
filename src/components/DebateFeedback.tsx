@@ -171,9 +171,17 @@ export const DebateFeedback = ({ config, onNewDebate, onRematch, userId }: Debat
           </Card>
         )}
 
-        <Button onClick={onNewDebate} size="lg" className="w-full">
-          Start New Debate
-        </Button>
+        <div className="flex gap-3">
+          {onRematch && (
+            <Button onClick={onRematch} size="lg" variant="outline" className="flex-1">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Rematch ({config.side === "proposition" ? "Opposition" : "Proposition"})
+            </Button>
+          )}
+          <Button onClick={onNewDebate} size="lg" className="flex-1">
+            Start New Debate
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -112,6 +112,7 @@ const Index = () => {
         <DebateFeedback 
           config={config}
           onNewDebate={handleNewDebate}
+          onRematch={handleRematch}
           userId={user?.id}
         />
       )}
