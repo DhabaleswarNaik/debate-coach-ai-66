@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { MessageSquare, Sparkles, Zap, Shield, Target, GraduationCap } from "lucide-react";
+import { Sparkles, Zap, Shield, Target, GraduationCap } from "lucide-react";
+import logoImg from "@/assets/logo.png";
 
 interface DebateSetupProps {
   onStart: (config: DebateConfig) => void;
@@ -66,8 +67,8 @@ export const DebateSetup = ({ onStart }: DebateSetupProps) => {
       <Card className="w-full max-w-5xl p-8 glass-card shadow-2xl relative animate-fade-up border-border/30">
         {/* Header */}
         <div className="flex items-center gap-5 mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg shadow-primary/25 glow-pulse shrink-0">
-            <MessageSquare className="w-7 h-7 text-primary-foreground" />
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0">
+            <img src={logoImg} alt="Logo" className="w-14 h-14 object-contain hover:scale-110 transition-transform duration-300" />
           </div>
           <div>
             <h1 className="text-3xl font-display font-bold gradient-text">AI Debate Partner</h1>
