@@ -220,7 +220,7 @@ export default function EditProfile() {
                 <Camera className="w-6 h-6 text-white" />
               </button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 text-center sm:text-left">
               <Button
                 variant="outline"
                 size="sm"
