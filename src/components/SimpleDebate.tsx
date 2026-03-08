@@ -31,6 +31,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   const [liveRecordingTime, setLiveRecordingTime] = useState(0);
   const [liveAITime, setLiveAITime] = useState(0);
   const [currentHint, setCurrentHint] = useState<string | null>(null);
+  const [hintType, setHintType] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
   const isRecordingRef = useRef(false);
