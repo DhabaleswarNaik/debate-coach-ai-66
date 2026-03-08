@@ -288,8 +288,16 @@ export default function Dashboard() {
               ))}
             </div>
 
+            {/* Streak Tracker & Personal Bests */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.1s' }}>
+              <StreakTracker debates={debates} />
+              <div className="md:col-span-2">
+                <PersonalBests debates={debates} />
+              </div>
+            </div>
+
             {/* Skill Badges */}
-            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.1s' }}>
+            <div className="animate-fade-up section-hover p-2 -m-2" style={{ animationDelay: '0.15s' }}>
               <SkillBadges debates={debates} />
             </div>
 
