@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Trophy, Calendar, TrendingUp, Target, Award, Sparkles, Mail, LogOut, BarChart3 } from "lucide-react";
+import { ArrowLeft, Trophy, Calendar, TrendingUp, Target, Award, Sparkles, Mail, LogOut, BarChart3, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { PerformanceCharts } from "@/components/PerformanceCharts";
 import { SkillBadges } from "@/components/SkillBadges";
