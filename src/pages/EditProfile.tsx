@@ -242,7 +242,7 @@ export default function EditProfile() {
         </Card>
 
         {/* Name Section */}
-        <Card className="p-6 glass-card animate-fade-up" style={{ animationDelay: "0.05s" }}>
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up" style={{ animationDelay: "0.05s" }}>
           <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
             <User className="w-5 h-5 text-primary" />
             Personal Info
