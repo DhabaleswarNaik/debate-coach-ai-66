@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb, MessageSquare, CheckCircle } from "lucide-react";
+import { Mic, MicOff, StopCircle, Volume2, Loader2, Lightbulb, MessageSquare, CheckCircle, Sparkles } from "lucide-react";
 import { DebateConfig } from "./DebateSetup";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -501,189 +501,289 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
   };
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-background via-background to-muted">
-      <div className="max-w-4xl mx-auto space-y-4">
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-bold mb-1">{config.topic}</h2>
-              <div className="flex gap-2 flex-wrap">
-                <Badge variant="outline">{config.difficulty}</Badge>
-                <Badge variant="outline">{config.side}</Badge>
-                <Badge variant="outline">{config.language === "hi" ? "हिंदी" : "English"}</Badge>
+    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30 overflow-hidden relative">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-32 -right-32 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+        {isRecording && <div className="absolute inset-0 bg-destructive/3 animate-pulse" />}
+        {isAISpeaking && <div className="absolute inset-0 bg-primary/3 animate-pulse" />}
+      </div>
+
+      {/* Top Bar */}
+      <header className="relative z-10 px-6 py-3 glass-card border-b border-border/30">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md shrink-0">
+              <MessageSquare className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-lg font-display font-bold truncate">{config.topic}</h2>
+              <div className="flex gap-1.5 flex-wrap">
+                <Badge variant="outline" className="text-[10px] px-2 py-0">{config.difficulty}</Badge>
+                <Badge variant="outline" className="text-[10px] px-2 py-0">{config.side}</Badge>
+                <Badge variant="outline" className="text-[10px] px-2 py-0">{config.language === "hi" ? "हिंदी" : "EN"}</Badge>
               </div>
             </div>
-            <Button variant="destructive" onClick={handleEndDebate}>
-              <StopCircle className="w-4 h-4 mr-2" />
-              End Debate
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Timer pills */}
+            <div className={`px-4 py-2 rounded-full text-xs font-mono font-bold transition-all duration-300 ${
+              isRecording 
+                ? 'bg-destructive/15 border-2 border-destructive text-destructive shadow-lg shadow-destructive/20 glow-pulse' 
+                : 'bg-muted/50 border border-border/50 text-muted-foreground'
+            }`}>
+              🎤 {isRecording 
+                ? `${Math.floor(timeLog.userTotal) + liveRecordingTime}s`
+                : `${Math.floor(timeLog.userTotal)}s`
+              }
+            </div>
+            <div className={`px-4 py-2 rounded-full text-xs font-mono font-bold transition-all duration-300 ${
+              isAISpeaking 
+                ? 'bg-primary/15 border-2 border-primary text-primary shadow-lg shadow-primary/20 glow-pulse' 
+                : 'bg-muted/50 border border-border/50 text-muted-foreground'
+            }`}>
+              🤖 {isAISpeaking 
+                ? `${Math.floor(timeLog.aiTotal) + liveAITime}s`
+                : `${Math.floor(timeLog.aiTotal)}s`
+              }
+            </div>
+
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={handleEndDebate}
+              className="btn-glow rounded-xl"
+            >
+              <StopCircle className="w-4 h-4 mr-1.5" />
+              End
             </Button>
           </div>
+        </div>
+      </header>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className={`p-3 rounded-lg text-center ${isRecording ? 'bg-red-100 dark:bg-red-900/30 border-2 border-red-500' : 'bg-muted/50'}`}>
-              <p className="text-sm text-muted-foreground">Your Speaking Time</p>
-              <p className="text-xl font-mono">
-                {isRecording 
-                  ? `${Math.floor(timeLog.userTotal) + liveRecordingTime}s (recording: ${liveRecordingTime}s)`
-                  : `${Math.floor(timeLog.userTotal)}s`
-                }
-              </p>
-            </div>
-            <div className={`p-3 rounded-lg text-center ${isAISpeaking ? 'bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-500' : 'bg-muted/50'}`}>
-              <p className="text-sm text-muted-foreground">AI Speaking Time</p>
-              <p className="text-xl font-mono">
-                {isAISpeaking 
-                  ? `${Math.floor(timeLog.aiTotal) + liveAITime}s (speaking: ${liveAITime}s)`
-                  : `${Math.floor(timeLog.aiTotal)}s`
-                }
-              </p>
-            </div>
-          </div>
-
-          {!debateStarted ? (
-            <div className="text-center py-8">
-              <Button onClick={startDebate} size="lg" disabled={isProcessing}>
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Starting...
-                  </>
-                ) : (
-                  <>
-                    <Mic className="w-5 h-5 mr-2" />
-                    Start Debate
-                  </>
-                )}
-              </Button>
-              <p className="text-sm text-muted-foreground mt-2">
-                AI will present its opening argument first
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-4">
-              {isAISpeaking && (
-                <div className="flex items-center gap-2 text-primary">
-                  <Volume2 className="w-6 h-6 animate-pulse" />
-                  <span>{config.language === "hi" ? "AI बोल रहा है..." : "AI is speaking..."}</span>
-                </div>
-              )}
-              
-              {isProcessing && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>{config.language === "hi" ? "सोच रहा हूं..." : "Thinking..."}</span>
-                </div>
-              )}
-
-              {!isAISpeaking && !isProcessing && (
-                <Button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  size="lg"
-                  variant={isRecording ? "destructive" : "default"}
-                  className="min-w-[200px]"
-                >
-                  {isRecording ? (
-                    <>
-                      <MicOff className="w-5 h-5 mr-2" />
-                      {config.language === "hi" ? "रिकॉर्डिंग बंद करें" : "Stop Recording"}
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-5 h-5 mr-2" />
-                      {config.language === "hi" ? "रिकॉर्डिंग शुरू करें" : "Start Recording"}
-                    </>
-                  )}
-                </Button>
-              )}
-
-              {isRecording && (
-                <div className="w-full p-3 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">
-                    {config.language === "hi" ? "आप कह रहे हैं:" : "You're saying:"}
-                  </p>
-                  <p className="text-foreground min-h-[24px]">
-                    {currentUserText || (config.language === "hi" ? "बोलना शुरू करें..." : "Start speaking...")}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </Card>
-
-        {/* Practice Mode Hint */}
-        {currentHint && (
-          <Card className={`p-4 border-2 ${
-            hintType === "post_speech_review" 
-              ? "border-primary/30 bg-primary/5" 
-              : "border-accent/30 bg-accent/5"
-          }`}>
-            <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
-                hintType === "post_speech_review" ? "bg-primary/10" : "bg-accent/10"
-              }`}>
-                {hintType === "post_speech_review" ? (
-                  <CheckCircle className="w-4 h-4 text-primary" />
-                ) : hintType === "opening_guide" ? (
-                  <MessageSquare className="w-4 h-4 text-accent" />
-                ) : (
-                  <Lightbulb className="w-4 h-4 text-accent" />
-                )}
+      {/* Main content — fills remaining space */}
+      <div className="flex-1 flex relative z-10 overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full flex gap-4 p-4">
+          
+          {/* Left: Transcript (takes most space) */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <Card className="flex-1 flex flex-col glass-card border-border/30 overflow-hidden">
+              <div className="px-4 py-3 border-b border-border/30 flex items-center justify-between">
+                <h3 className="font-display font-bold text-sm">
+                  {config.language === "hi" ? "💬 बातचीत" : "💬 Conversation"}
+                </h3>
+                <Badge variant="outline" className="text-[10px]">{transcript.length} messages</Badge>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${
-                  hintType === "post_speech_review" ? "text-primary" : "text-accent"
-                }`}>
-                  {hintType === "post_speech_review" 
-                    ? "📝 Review & Next Steps" 
-                    : hintType === "opening_guide" 
-                      ? "🎯 How to Respond" 
-                      : "💡 Suggested Approach"}
-                </p>
-                <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">
-                  {currentHint}
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        {/* Transcript */}
-        <Card className="p-4">
-          <h3 className="font-semibold mb-3">
-            {config.language === "hi" ? "बातचीत का रिकॉर्ड" : "Conversation Transcript"}
-          </h3>
-          <ScrollArea className="h-[400px]" ref={scrollRef as any}>
-            {transcript.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">
-                {config.language === "hi" ? "अभी तक कोई बातचीत नहीं" : "No conversation yet"}
-              </p>
-            ) : (
-              <div className="space-y-3 px-2 py-2">
-                {transcript.map((entry, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${entry.speaker === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed ${
-                        entry.speaker === "user"
-                          ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"
-                          : "bg-muted text-foreground rounded-2xl rounded-bl-md"
-                      }`}
-                    >
-                      <p className={`text-[10px] font-semibold uppercase tracking-wide mb-1 ${
-                        entry.speaker === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
-                      }`}>
-                        {entry.speaker === "user" ? "You" : "AI Opponent"}
+              <ScrollArea className="flex-1" ref={scrollRef as any}>
+                {transcript.length === 0 ? (
+                  <div className="flex items-center justify-center h-full py-16">
+                    <div className="text-center space-y-3 animate-pulse">
+                      <div className="w-16 h-16 mx-auto rounded-2xl bg-muted/50 flex items-center justify-center">
+                        <MessageSquare className="w-8 h-8 text-muted-foreground/50" />
+                      </div>
+                      <p className="text-muted-foreground text-sm">
+                        {config.language === "hi" ? "बातचीत शुरू होने का इंतज़ार..." : "Waiting for debate to begin..."}
                       </p>
-                      {entry.text}
                     </div>
                   </div>
-                ))}
-              </div>
+                ) : (
+                  <div className="space-y-3 p-4">
+                    {transcript.map((entry, index) => (
+                      <div
+                        key={index}
+                        className={`flex ${entry.speaker === "user" ? "justify-end" : "justify-start"} animate-fade-up`}
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                      >
+                        <div
+                          className={`max-w-[80%] px-4 py-3 text-sm leading-relaxed transition-all duration-300 hover:shadow-md ${
+                            entry.speaker === "user"
+                              ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl rounded-br-sm shadow-md shadow-primary/10"
+                              : "bg-muted/80 text-foreground rounded-2xl rounded-bl-sm border border-border/30"
+                          }`}
+                        >
+                          <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${
+                            entry.speaker === "user" ? "text-primary-foreground/60" : "text-muted-foreground"
+                          }`}>
+                            {entry.speaker === "user" ? "You" : "AI Opponent"}
+                          </p>
+                          {entry.text}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+
+              {/* Live recording preview inside transcript */}
+              {isRecording && (
+                <div className="px-4 py-3 border-t border-destructive/20 bg-destructive/5 animate-fade-in">
+                  <div className="flex items-start gap-2">
+                    <div className="w-2 h-2 rounded-full bg-destructive animate-pulse mt-1.5 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-destructive/70 mb-1">
+                        {config.language === "hi" ? "लाइव" : "Live"}
+                      </p>
+                      <p className="text-sm text-foreground">
+                        {currentUserText || (config.language === "hi" ? "बोलना शुरू करें..." : "Start speaking...")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {/* Right: Controls + Hints */}
+          <div className="w-80 shrink-0 flex flex-col gap-4">
+            {/* Controls Card */}
+            <Card className="glass-card border-border/30 p-5">
+              {!debateStarted ? (
+                <div className="text-center space-y-4">
+                  <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                    <Mic className="w-10 h-10 text-primary/60" />
+                  </div>
+                  <Button 
+                    onClick={startDebate} 
+                    size="lg" 
+                    disabled={isProcessing}
+                    className="w-full h-14 text-base font-bold bg-gradient-to-r from-primary to-primary/80 shadow-xl shadow-primary/20 btn-glow rounded-xl"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Starting...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Start Debate
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    AI will present its opening argument first
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Status indicator */}
+                  <div className="text-center">
+                    {isAISpeaking && (
+                      <div className="flex flex-col items-center gap-3 py-4 animate-fade-in">
+                        <div className="relative">
+                          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Volume2 className="w-8 h-8 text-primary animate-pulse" />
+                          </div>
+                          <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" />
+                        </div>
+                        <span className="text-sm font-semibold text-primary">
+                          {config.language === "hi" ? "AI बोल रहा है..." : "AI Speaking..."}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {isProcessing && (
+                      <div className="flex flex-col items-center gap-3 py-4 animate-fade-in">
+                        <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
+                          <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {config.language === "hi" ? "सोच रहा हूं..." : "Thinking..."}
+                        </span>
+                      </div>
+                    )}
+
+                    {!isAISpeaking && !isProcessing && (
+                      <div className="space-y-3 animate-fade-in">
+                        <button
+                          onClick={isRecording ? stopRecording : startRecording}
+                          className={`w-full group relative overflow-hidden rounded-2xl p-6 transition-all duration-500 ${
+                            isRecording
+                              ? 'bg-gradient-to-br from-destructive to-destructive/80 text-destructive-foreground shadow-xl shadow-destructive/30'
+                              : 'bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-xl shadow-primary/20'
+                          }`}
+                          style={isRecording 
+                            ? { boxShadow: '0 0 30px hsl(var(--destructive) / 0.4), 0 8px 20px hsl(var(--destructive) / 0.2)' }
+                            : { boxShadow: '0 0 30px hsl(var(--primary) / 0.3), 0 8px 20px hsl(var(--primary) / 0.15)' }
+                          }
+                        >
+                          <div className="relative z-10 flex flex-col items-center gap-2">
+                            {isRecording ? (
+                              <MicOff className="w-10 h-10 transition-transform duration-300 group-hover:scale-110" />
+                            ) : (
+                              <Mic className="w-10 h-10 transition-transform duration-300 group-hover:scale-110" />
+                            )}
+                            <span className="font-bold text-sm">
+                              {isRecording 
+                                ? (config.language === "hi" ? "बंद करें" : "Stop Recording")
+                                : (config.language === "hi" ? "बोलें" : "Start Recording")
+                              }
+                            </span>
+                          </div>
+                          {/* Ripple effect on hover */}
+                          <div className={`absolute inset-0 rounded-2xl transition-opacity duration-500 ${
+                            isRecording ? 'bg-destructive/20' : 'bg-white/10'
+                          } opacity-0 group-hover:opacity-100`} />
+                        </button>
+
+                        {isRecording && (
+                          <div className="flex items-center justify-center gap-1.5 text-destructive text-xs font-mono animate-pulse">
+                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            REC {liveRecordingTime}s
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            {/* Practice Mode Hint */}
+            {currentHint && (
+              <Card className={`glass-card border-2 p-4 animate-fade-up ${
+                hintType === "post_speech_review" 
+                  ? "border-primary/30 bg-primary/5" 
+                  : "border-accent/30 bg-accent/5"
+              }`}
+              style={hintType === "post_speech_review" 
+                ? { boxShadow: '0 0 20px hsl(var(--primary) / 0.1)' } 
+                : { boxShadow: '0 0 20px hsl(var(--accent) / 0.1)' }
+              }
+              >
+                <div className="flex items-start gap-2.5">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                    hintType === "post_speech_review" ? "bg-primary/10" : "bg-accent/10"
+                  }`}>
+                    {hintType === "post_speech_review" ? (
+                      <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                    ) : hintType === "opening_guide" ? (
+                      <MessageSquare className="w-3.5 h-3.5 text-accent" />
+                    ) : (
+                      <Lightbulb className="w-3.5 h-3.5 text-accent" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${
+                      hintType === "post_speech_review" ? "text-primary" : "text-accent"
+                    }`}>
+                      {hintType === "post_speech_review" 
+                        ? "📝 Review" 
+                        : hintType === "opening_guide" 
+                          ? "🎯 Respond" 
+                          : "💡 Approach"}
+                    </p>
+                    <div className="text-xs text-foreground whitespace-pre-line leading-relaxed">
+                      {currentHint}
+                    </div>
+                  </div>
+                </div>
+              </Card>
             )}
-          </ScrollArea>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
