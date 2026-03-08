@@ -21,6 +21,7 @@ interface Debate {
   created_at: string;
   scores: any;
   transcript?: any;
+  practice_mode?: boolean;
 }
 
 export default function Dashboard() {
