@@ -199,12 +199,12 @@ export default function EditProfile() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-4 sm:space-y-6">
         {/* Avatar Section */}
-        <Card className="p-6 glass-card animate-fade-up">
-          <h2 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
+        <Card className="p-4 sm:p-6 glass-card animate-fade-up">
+          <h2 className="text-base sm:text-lg font-display font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             <Camera className="w-5 h-5 text-primary" />
             Profile Photo
           </h2>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <div className="relative group">
               <Avatar className="w-24 h-24 border-4 border-primary/20 shadow-lg transition-all duration-300 group-hover:border-primary/40">
                 <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
