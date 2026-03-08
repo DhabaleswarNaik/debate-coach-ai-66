@@ -57,6 +57,16 @@ const Index = () => {
     setState("setup");
   };
 
+  const handleRematch = () => {
+    if (!config) return;
+    const swappedConfig: DebateConfig = {
+      ...config,
+      side: config.side === "proposition" ? "opposition" : "proposition",
+    };
+    setConfig(swappedConfig);
+    setState("active");
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/auth");
@@ -102,6 +112,7 @@ const Index = () => {
         <DebateFeedback 
           config={config}
           onNewDebate={handleNewDebate}
+          onRematch={handleRematch}
           userId={user?.id}
         />
       )}
