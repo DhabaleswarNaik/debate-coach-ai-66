@@ -335,7 +335,10 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
               userMessage: ""
             }
           }).then(({ data: hintData }) => {
-            if (hintData?.hint) setCurrentHint(hintData.hint);
+            if (hintData?.hint) {
+              setCurrentHint(hintData.hint);
+              setHintType(hintData.hintType || "opening_guide");
+            }
           }).catch(e => console.error("Error fetching opening hint:", e))
         : Promise.resolve();
 
