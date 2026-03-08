@@ -76,13 +76,8 @@ const Auth = () => {
         <CardContent className="p-6 sm:p-8">
           {/* Logo Header */}
           <div className="text-center mb-8">
-            <div className="relative w-24 h-24 mx-auto mb-5 group">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse" />
-              <img 
-                src={logo} 
-                alt="AI Debate Partner Logo" 
-                className="relative w-24 h-24 object-contain drop-shadow-lg transition-transform duration-500 hover:scale-110 hover:rotate-3"
-              />
+            <div className="flex justify-center mb-5">
+              <LogoGlow size="lg" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold gradient-text tracking-tight">AI Debate Partner</h1>
             <p className="text-muted-foreground mt-2 text-sm">
