@@ -522,6 +522,7 @@ export const SimpleDebate = ({ config, onEnd, userId }: SimpleDebateProps) => {
       <header className="relative z-10 px-6 py-3 glass-card border-b border-border/30">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4 min-w-0">
+            <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md shrink-0">
               <MessageSquare className="w-5 h-5 text-primary-foreground" />
             </div>
